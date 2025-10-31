@@ -2,103 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 217 91% 60%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-hover: 0 0% 0%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 60%;
-
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    --whatsapp: 142 70% 49%;
-    --instagram-start: 300 100% 50%;
-    --instagram-end: 280 100% 70%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 217 91% 60%;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 217 91% 60%;
-  }
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 0 0% 0%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+    --radius-card: 1rem;
+    --radius-button: 0.75rem;
+  
+  /* Sombras sutis para cards minimalistas */
+  --shadow-minimal: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-minimal-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-minimal-xl: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Gradientes minimalistas */
+  --gradient-primary: linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 20%) 100%);
+  --gradient-secondary: hsl(0 0% 100%);
+  --gradient-card: hsl(0 0% 100%);
+  
+  /* Sombras para cards */
+  --shadow-card: var(--shadow-minimal);
+  --shadow-hover: var(--shadow-minimal-lg);
+  --shadow-intense: var(--shadow-minimal-xl);
+}
 
   .dark {
-    --background: 0 0% 5%;
+    --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
-
-    --card: 0 0% 10%;
+    --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 8%;
+    --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 15%;
+    --primary: 0 0% 98%;
+    --primary-hover: 0 0% 80%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 60%;
-
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --whatsapp: 142 70% 49%;
-    --instagram-start: 300 100% 50%;
-    --instagram-end: 280 100% 70%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 217 91% 60%;
-
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 217 91% 60%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -106,8 +82,212 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .shadow-minimal {
+    box-shadow: var(--shadow-minimal);
+  }
+  
+  .shadow-minimal-lg {
+    box-shadow: var(--shadow-minimal-lg);
+  }
+  
+  .shadow-minimal-xl {
+    box-shadow: var(--shadow-minimal-xl);
+  }
+  
+  .hover\:shadow-minimal-xl:hover {
+    box-shadow: var(--shadow-minimal-xl);
+  }
+  
+  /* Container responsivo: 100% mobile, 85% desktop */
+  .container-85 {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.75rem; /* 12px mobile */
+    padding-right: 0.75rem;
+  }
+  
+  @media (min-width: 768px) {
+    .container-85 {
+      padding-left: 1rem; /* 16px tablet+ */
+      padding-right: 1rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-85 {
+      max-width: 85%;
+      padding-left: 1.5rem; /* 24px desktop */
+      padding-right: 1.5rem;
+    }
+  }
+  
+  /* Sistema de espaçamentos responsivos */
+  .spacing-responsive-sm {
+    @apply space-y-4 md:space-y-6 lg:space-y-8;
+  }
+  
+  .spacing-responsive-md {
+    @apply space-y-6 md:space-y-8 lg:space-y-12;
+  }
+  
+  .spacing-responsive-lg {
+    @apply space-y-8 md:space-y-12 lg:space-y-16;
+  }
+  
+  /* Padding responsivo para seções */
+  .section-padding {
+    @apply py-8 md:py-12 lg:py-16;
+  }
+  
+  .section-padding-sm {
+    @apply py-4 md:py-6 lg:py-8;
+  }
+  
+  /* Animações customizadas para atleta correndo */
+  @keyframes swing-left {
+    0%, 100% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+  }
+  
+  @keyframes swing-right {
+    0%, 100% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+  }
+  
+  @keyframes run-left {
+    0%, 100% { transform: rotate(-20deg); }
+    50% { transform: rotate(20deg); }
+  }
+  
+  @keyframes run-right {
+    0%, 100% { transform: rotate(20deg); }
+    50% { transform: rotate(-20deg); }
+  }
+  
+  @keyframes speed-lines {
+    0% { opacity: 0; transform: translateX(-10px); }
+    50% { opacity: 1; transform: translateX(0px); }
+    100% { opacity: 0; transform: translateX(10px); }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.6); }
+  }
+  
+  @keyframes run-cycle {
+    0%, 100% { 
+      transform: scale(1) translateX(0px);
+      filter: brightness(1);
+    }
+    25% { 
+      transform: scale(1.02) translateX(1px);
+      filter: brightness(1.1);
+    }
+    50% { 
+      transform: scale(1) translateX(0px);
+      filter: brightness(1);
+    }
+    75% { 
+      transform: scale(1.02) translateX(-1px);
+      filter: brightness(1.1);
+    }
+  }
+  
+  .animate-swing-left {
+    animation: swing-left 0.6s ease-in-out infinite;
+  }
+  
+  .animate-swing-right {
+    animation: swing-right 0.6s ease-in-out infinite;
+  }
+  
+  .animate-run-left {
+    animation: run-left 0.4s ease-in-out infinite;
+  }
+  
+  .animate-run-right {
+    animation: run-right 0.4s ease-in-out infinite;
+  }
+  
+  .animate-speed-lines {
+    animation: speed-lines 1s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  .animate-run-cycle {
+    animation: run-cycle 0.8s ease-in-out infinite;
+  }
+}
+
+/* Regras para ocultar o SVG/logo do Lovable no canto inferior direito */
+/* Oculta elementos que contenham "lovable" no atributo ou classe */
+[class*="lovable"],
+[id*="lovable"],
+[data-*="lovable"],
+svg[class*="lovable"],
+div[class*="lovable"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Oculta elementos posicionados no canto inferior direito com z-index alto */
+div[style*="position: fixed"][style*="bottom"][style*="right"][style*="z-index"],
+div[style*="position:fixed"][style*="bottom"][style*="right"][style*="z-index"] {
+  display: none !important;
+}
+
+/* Oculta SVGs no canto inferior direito */
+svg[style*="position: fixed"][style*="bottom"][style*="right"],
+svg[style*="position:fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
+}
+
+/* Oculta elementos com z-index muito alto (comum em watermarks) */
+*[style*="z-index: 999"],
+*[style*="z-index:999"],
+*[style*="z-index: 9999"],
+*[style*="z-index:9999"] {
+  display: none !important;
+}
+
+/* Oculta elementos específicos do Lovable que podem aparecer */
+iframe[src*="lovable"],
+script[src*="lovable"] + *,
+link[href*="lovable"] + * {
+  display: none !important;
+}
+
+/* Oculta elementos no canto inferior direito com classes comuns de watermark */
+.watermark,
+.logo-watermark,
+.platform-logo,
+.brand-logo {
+  display: none !important;
+}
+
+/* Seletor mais específico para elementos fixos no bottom-right */
+body > div:last-child[style*="position: fixed"][style*="bottom"][style*="right"],
+body > div:last-child[style*="position:fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
 }

@@ -1,29 +1,86 @@
-import { Calendar, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Calendar, Sun, Moon } from "lucide-react";
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 const Header = () => {
+  const { isDark, toggleDarkMode } = useDarkMode();
+
   return (
-    <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-foreground">PACE RAM</h1>
-          </div>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center group">
+          <img 
+            src="/lovable-uploads/0677547b-3e24-403f-9162-45f6deb0cf93.png" 
+            alt="PACE RAM Logo" 
+            className="h-10 w-auto transition-all duration-300 group-hover:scale-105"
+          />
+        </Link>
+
+        {/* Botões Mobile - Visível apenas em mobile, lado direito */}
+        <div className="md:hidden flex items-center space-x-3">
+          {/* Botão Dark Mode */}
+          <button
+            onClick={toggleDarkMode}
+            className="text-white transition-colors duration-200"
+            aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+          >
+            {isDark ? (
+              <Sun className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <Moon className="w-5 h-5 text-blue-300" />
+            )}
+          </button>
           
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-foreground hover:text-primary transition-colors">
-              Início
-            </a>
-            <Button variant="ghost" size="icon">
-              <Sun className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" className="gap-2">
-              <Calendar className="h-4 w-4" />
-              Calendário
-            </Button>
-            <Button>Login</Button>
-          </nav>
+          {/* Botão Calendário */}
+          <Link 
+            to="/calendario" 
+            className="text-blue-400 transition-colors duration-200 font-medium text-xl flex items-center"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            <Calendar className="w-5 h-5 text-blue-400 mr-2" />
+            Calendário
+          </Link>
         </div>
+        
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link 
+            to="/" 
+            className="text-white hover:text-blue-400 transition-colors duration-200 font-medium"
+          >
+            Início
+          </Link>
+          
+          {/* Botão Dark Mode */}
+          <button
+            onClick={toggleDarkMode}
+            className="text-white transition-colors duration-200"
+            aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+          >
+            {isDark ? (
+              <Sun className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <Moon className="w-5 h-5 text-blue-300" />
+            )}
+          </button>
+          
+          <Link 
+            to="/calendario" 
+            className="text-blue-400 transition-colors duration-200 font-medium text-xl flex items-center"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            <Calendar className="w-5 h-5 text-blue-400 mr-2" />
+            Calendário
+          </Link>
+
+          <Link 
+            to="/login" 
+            className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+          >
+            Login
+          </Link>
+        </nav>
+
       </div>
     </header>
   );

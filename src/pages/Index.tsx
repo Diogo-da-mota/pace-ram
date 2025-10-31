@@ -1,155 +1,209 @@
 import Header from "@/components/Header";
-import SocialCard from "@/components/SocialCard";
-import EventCard from "@/components/EventCard";
-import SectionHeader from "@/components/SectionHeader";
-import FAQItem from "@/components/FAQItem";
-import { MessageCircle, Instagram, Clock } from "lucide-react";
-import event1 from "@/assets/event-1.jpg";
-import event2 from "@/assets/event-2.jpg";
-import event3 from "@/assets/event-3.jpg";
-import event4 from "@/assets/event-4.jpg";
-import event5 from "@/assets/event-5.jpg";
-import event6 from "@/assets/event-6.jpg";
+import SectionTitle from "@/components/SectionTitle";
+import RaceCard from "@/components/RaceCard";
+import DiagonalTitle from "@/components/DiagonalTitle";
+import RunnerLoader from "@/components/RunnerLoader";
+import AnimatedParticles from "@/components/AnimatedParticles";
+import CardSection from "@/components/CardSection";
+import BackgroundImage from "@/components/BackgroundImage";
+import { useCorridasSeparadas } from "@/hooks/useCorridasSeparadas";
+import { useEventosPublicos } from "@/hooks/useEventosPublicos";
+import { useRedesSociaisPublicas } from "@/hooks/useRedesSociaisPublicas";
+import { useOutrosPublicos } from "@/hooks/useOutrosPublicos";
+import { formatDateToBrazilian } from "@/utils/dateFormatter";
+import RedeSocialCard from "@/components/RedeSocialCard";
+import { useState, useEffect } from "react";
+
+// Import das imagens geradas (para fallback)
+import raceExample1 from "@/assets/race-example-1.jpg";
+import raceExample2 from "@/assets/race-example-2.jpg";
+import raceExample3 from "@/assets/race-example-3.jpg";
 
 const Index = () => {
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const { corridasRecentes, corridasEmBreve, loading: loadingCorridas } = useCorridasSeparadas();
+  const { eventos, loading: loadingEventos } = useEventosPublicos();
+  const { redesSociais, loading: loadingRedesSociais } = useRedesSociaisPublicas();
+  const { outros, loading: loadingOutros } = useOutrosPublicos();
+
+  // Simular loading inicial da página
+  useEffect(() => {
+    setIsInitialLoading(false);
+  }, []);
+
+  // Mostrar loader se ainda estiver carregando inicialmente
+  if (isInitialLoading) {
+    return <RunnerLoader message="Preparando sua experiência..." />;
+  }
+
+  // Verificar se alguma seção está carregando para mostrar loader único
+  const isAnyLoading = loadingRedesSociais || loadingCorridas || loadingEventos || loadingOutros;
+  if (isAnyLoading) {
+    const loadingMessage = loadingRedesSociais ? "Carregando redes sociais..." :
+                          loadingCorridas ? "Carregando corridas..." :
+                          loadingEventos ? "Carregando eventos..." :
+                          "Carregando conteúdos...";
+    return <RunnerLoader message={loadingMessage} />;
+  }
+
+  // Fallback images para quando não há imagem definida
+  const fallbackImages = [raceExample1, raceExample2, raceExample3];
+  
+  // Usar apenas dados reais do banco de dados
+  const corridasRecentesParaExibir = corridasRecentes;
+  const corridasEmBreveParaExibir = corridasEmBreve;
+  const eventosParaExibir = eventos;
+  const redesSociaisParaExibir = redesSociais;
+  const outrosParaExibir = outros;
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-background relative">
+      {/* Background Image */}
+      <BackgroundImage className="z-0" />
       
-      <main className="container mx-auto px-4 py-12 space-y-16">
-        {/* Social Section */}
-        <section>
-          <SectionHeader title="Redes" subtitle="Sociais" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
-            <SocialCard
-              icon={<MessageCircle className="h-16 w-16" />}
-              title="Grupo do WhatsApp"
-              subtitle="PACE RAM X 🏃"
-              gradient="bg-whatsapp"
-              url="https://whatsapp.com"
-            />
-            <SocialCard
-              icon={<Instagram className="h-16 w-16" />}
-              title="PACE RAM"
-              subtitle="Feriado"
-              gradient="bg-gradient-to-br from-instagram-start to-instagram-end"
-              url="https://instagram.com"
+      {/* Conteúdo principal */}
+      <div className="relative z-10">
+        <Header />
+
+      {/* Seção Redes Sociais */}
+      <section className="section-padding bg-background relative pt-24 sm:pt-28 md:pt-20">
+        <div className="container-85">
+          <div className="animate-fade-in">
+            <DiagonalTitle 
+              leftText="Redes"
+              rightText="Sociais"
+              maxWidth="max-w-7xl"
             />
           </div>
-        </section>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6 max-w-4xl mx-auto">
+            {redesSociaisParaExibir.map((redeSocial, index) => (
+              <div 
+                key={redeSocial.id} 
+                className="animate-scale-in hover:animate-float"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <RedeSocialCard
+                  redeSocial={redeSocial}
+                  onEdit={() => {}}
+                  onDelete={() => {}}
+                  showActions={false}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {/* Recent Events Section */}
-        <section>
-          <SectionHeader title="Corridas" subtitle="Recentes" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <EventCard
-              image={event1}
-              date="30/10/2025"
-              location="Rio Verde - GO"
-              title="BORRA CORRER SERVIDOR"
-              status="open"
-            />
-            <EventCard
-              image={event2}
-              date="26/10/2025"
-              location="Rio Verde - GO"
-              title="Corrida Far Night Neon 2025"
-              status="open"
-            />
-            <EventCard
-              image={event3}
-              date="18/10/2025"
-              location="Rio Verde - GO"
-              title="MOVIMENTO PELA VIDA SEM CÂNCER"
-              status="open"
-            />
-            <EventCard
-              image={event4}
-              date="20/09/2025"
-              location="Jataí-Go"
-              title="Vigoro Run"
-              status="open"
-            />
-            <EventCard
-              image={event5}
-              date="31/08/2025"
-              location="Rio verde"
-              title="Photos Circuito Eletro Center 26 Anos"
-              status="open"
-            />
-            <EventCard
-              image={event6}
-              date="23/08/2025"
-              location="Rio verde"
-              title="Correndo com Vinho Primeira edição"
-              status="open"
+      {/* Seção Corridas Recentes */}
+      <section id="corridas-recentes" className="section-padding bg-black relative overflow-hidden">
+        <div className="container-85 relative z-10">
+          <div className="animate-slide-up">
+            <DiagonalTitle 
+              leftText="Corridas"
+              rightText="Recentes"
+              maxWidth="max-w-7xl"
             />
           </div>
-        </section>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-4 lg:gap-6 max-w-7xl mx-auto justify-items-center">
+            {corridasRecentesParaExibir.map((corrida, index) => (
+              <div 
+                key={corrida.id}
+                className="animate-fade-in hover:scale-105 transition-all duration-300 w-full max-w-[180px] sm:max-w-none"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <RaceCard
+                    title={corrida.titulo}
+                    date={formatDateToBrazilian(corrida.data_evento)}
+                    location={corrida.local}
+                    image={corrida.imagem_principal || fallbackImages[index % fallbackImages.length]}
+                    link={corrida.link_externo || "#"}
+                    footerText={corrida.texto_rodape || "COMPRE AS SUAS FOTOS"}
+                    status={corrida.status}
+                    evento_calendario_id={corrida.evento_calendario_id}
+                    isRecente={true}
+                  />
+                </div>
+              ))}
+            </div>
+        </div>
+      </section>
 
-        {/* Coming Soon Section */}
-        <section>
-          <SectionHeader 
-            icon={<Clock className="h-8 w-8" />}
-            title="Em" 
-            subtitle="Breve" 
+      {/* Seção Corridas Em Breve */}
+      <section id="corridas-em-breve" className="section-padding bg-background relative overflow-hidden">
+        <div className="container-85 relative z-10">
+          <div className="animate-slide-up">
+            <DiagonalTitle 
+              leftText="⏰ Em"
+              rightText="Breve"
+              maxWidth="max-w-7xl"
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-4 lg:gap-6 max-w-7xl mx-auto justify-items-center">
+            {corridasEmBreveParaExibir.map((corrida, index) => (
+              <div 
+                key={corrida.id}
+                className="animate-fade-in hover:scale-105 transition-all duration-300 w-full max-w-[180px] sm:max-w-none"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <RaceCard
+                    title={corrida.titulo}
+                    date={formatDateToBrazilian(corrida.data_evento)}
+                    location={corrida.local}
+                    image={corrida.imagem_principal || fallbackImages[index % fallbackImages.length]}
+                    link={corrida.link_externo || "#"}
+                    footerText={corrida.texto_rodape || "COMPRE AS SUAS FOTOS"}
+                    status={corrida.status}
+                    evento_calendario_id={corrida.evento_calendario_id}
+                    isRecente={false}
+                  />
+                </div>
+              ))}
+            </div>
+        </div>
+      </section>
+
+
+
+      {/* Seção Outros */}
+      <section className="section-padding bg-background relative overflow-hidden">
+        
+        <div className="container-85 relative z-10">
+          <div className="animate-slide-up">
+            <SectionTitle 
+              title="Dúvidas e Links externos"
+              showUnderline={true}
+            />
+          </div>
+          
+          <CardSection 
+            items={outrosParaExibir} 
+            animationDelayMultiplier={0.2} 
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <EventCard
-              image={event1}
-              date="08/11/2025"
-              location="Jataí goias"
-              title="1° Corrida do Time Larissa Peres"
-              status="open"
-            />
-            <EventCard
-              image={event2}
-              date="16/11/2025"
-              location="Ipora - Goiás"
-              title="Corrida de Rua Iporá 1° Edição"
-              status="closed"
-            />
-            <EventCard
-              image={event3}
-              date="12/12/2025"
-              location="Rio Verde-..."
-              title="Maratona Dr.Gordon 2025"
-              status="open"
-            />
-            <EventCard
-              image={event4}
-              date="14/12/2025"
-              location="Rio Verde-..."
-              title="1° Corre Center"
-              status="closed"
-            />
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section>
-          <h2 className="text-3xl font-bold text-center text-foreground mb-8">
-            Dúvidas e Links externos
-          </h2>
-          <div className="max-w-3xl mx-auto space-y-4">
-            <FAQItem 
-              question="Acessar as minhas Fotos"
-              url="https://photos.example.com"
-            />
-            <FAQItem 
-              question="Como fazer o download das minhas fotos?"
-              url="https://help.example.com"
-            />
-          </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © 2025 PACE RAM. Todos os direitos reservados.
+      <footer className="bg-black text-white section-padding-sm relative overflow-hidden">
+
+        
+        <div className="container-85 text-center relative z-10">
+          <div className="animate-fade-in">
+            <div className="mb-4">
+              
+            </div>
+            
+            <div className="border-t border-white/20 pt-6">
+              <p className="text-sm opacity-90">
+                © 2025 PACE RAM. Todos os direitos reservados.
+              </p>
+            </div>
+          </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 };
