@@ -185,7 +185,7 @@ const RaceCard = ({
         </div>
         
         {/* Content */}
-        <div className="p-2 md:p-3 flex flex-col flex-1">
+        <div className="p-2 md:p-3 pb-6 md:pb-8 flex flex-col flex-1">
           {/* Título na posição original */}
           <h3 className="text-sm md:text-base font-bold text-foreground mb-2 line-clamp-2">
             {title}
