@@ -11,15 +11,24 @@ declare global {
   }
 }
 
+const pickNonEmpty = (...vals: Array<string | undefined | null>) => {
+  for (const v of vals) {
+    if (typeof v === 'string' && v.trim() !== '') return v;
+  }
+  return undefined;
+};
+
 const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL ??
-  (typeof window !== 'undefined' ? window.__ENV__?.VITE_SUPABASE_URL : undefined) ??
-  'https://example.supabase.co';
+  pickNonEmpty(
+    import.meta.env.VITE_SUPABASE_URL,
+    typeof window !== 'undefined' ? window.__ENV__?.VITE_SUPABASE_URL : undefined
+  ) ?? 'https://example.supabase.co';
 
 const SUPABASE_PUBLISHABLE_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ??
-  (typeof window !== 'undefined' ? window.__ENV__?.VITE_SUPABASE_ANON_KEY : undefined) ??
-  'public-anon-key';
+  pickNonEmpty(
+    import.meta.env.VITE_SUPABASE_ANON_KEY,
+    typeof window !== 'undefined' ? window.__ENV__?.VITE_SUPABASE_ANON_KEY : undefined
+  ) ?? 'public-anon-key';
 
 if (
   SUPABASE_URL === 'https://example.supabase.co' ||
