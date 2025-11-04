@@ -88,10 +88,9 @@ Returns a list of all published resources (races, categories, and events) in a G
     "path": "corridas/abc123",
     "type": "race",
     "size": 256,
-    "sha": "abc123",
+    "resource_id": "abc123",
     "url": "your-domain.vercel.app/api/contents/corridas/abc123",
     "html_url": "https://your-domain.vercel.app/corridas/abc123",
-    "git_url": null,
     "download_url": "https://example.com/race-image.jpg"
   }
 ]

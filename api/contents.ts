@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// Supabase configuration
-const SUPABASE_URL = "https://oowclaofuhcfdqcjmvmr.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vd2NsYW9mdWhjZmRxY2ptdm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3Mzk3NjAsImV4cCI6MjA3MjMxNTc2MH0.9ETMv1iaN7LEcJOHuS26cLpp1cEO4w7BM0bPEoGugvQ";
+// Supabase configuration from environment variables
+const SUPABASE_URL = process.env.SUPABASE_URL || "https://oowclaofuhcfdqcjmvmr.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vd2NsYW9mdWhjZmRxY2ptdm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3Mzk3NjAsImV4cCI6MjA3MjMxNTc2MH0.9ETMv1iaN7LEcJOHuS26cLpp1cEO4w7BM0bPEoGugvQ";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
@@ -12,10 +12,9 @@ interface ContentItem {
   path: string;
   type: string;
   size?: number;
-  sha?: string;
+  resource_id?: string;
   url?: string;
   html_url?: string;
-  git_url?: string;
   download_url?: string | null;
 }
 
@@ -40,6 +39,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const contents: ContentItem[] = [];
     
+    // Get base URL for constructing URLs
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers.host || 'localhost';
+    const baseUrl = `${protocol}://${host}`;
+    
     // Get all published races (corridas)
     const { data: corridas, error: corridasError } = await supabase
       .from('corridas')
@@ -56,10 +60,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           path: `corridas/${corrida.id}`,
           type: 'race',
           size: JSON.stringify(corrida).length,
-          sha: corrida.id,
-          url: `${req.headers.host || ''}/api/contents/corridas/${corrida.id}`,
-          html_url: `${req.headers.origin || ''}/corridas/${corrida.id}`,
-          git_url: null,
+          resource_id: corrida.id,
+          url: `${baseUrl}/api/contents/corridas/${corrida.id}`,
+          html_url: `${baseUrl}/corridas/${corrida.id}`,
           download_url: corrida.imagem_principal,
         });
       });
@@ -81,10 +84,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           path: `categorias/${categoria.id}`,
           type: 'category',
           size: JSON.stringify(categoria).length,
-          sha: categoria.id,
-          url: `${req.headers.host || ''}/api/contents/categorias/${categoria.id}`,
-          html_url: `${req.headers.origin || ''}/categorias/${categoria.id}`,
-          git_url: null,
+          resource_id: categoria.id,
+          url: `${baseUrl}/api/contents/categorias/${categoria.id}`,
+          html_url: `${baseUrl}/categorias/${categoria.id}`,
           download_url: null,
         });
       });
@@ -93,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Get all events (eventos)
     const { data: eventos, error: eventosError } = await supabase
       .from('eventos')
-      .select('*')
+      .select('id, nome, titulo, data_evento, criado_em')
       .eq('publicado', true)
       .order('data_evento', { ascending: false });
 
@@ -106,10 +108,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           path: `eventos/${evento.id}`,
           type: 'event',
           size: JSON.stringify(evento).length,
-          sha: evento.id,
-          url: `${req.headers.host || ''}/api/contents/eventos/${evento.id}`,
-          html_url: `${req.headers.origin || ''}/eventos/${evento.id}`,
-          git_url: null,
+          resource_id: evento.id,
+          url: `${baseUrl}/api/contents/eventos/${evento.id}`,
+          html_url: `${baseUrl}/eventos/${evento.id}`,
           download_url: null,
         });
       });
