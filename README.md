@@ -71,3 +71,34 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## API Endpoints
+
+This project includes serverless API endpoints deployed on Vercel:
+
+### GET /api/contents
+
+Returns a list of all published resources (races, categories, and events) in a GitHub API-compatible format.
+
+**Example response:**
+```json
+[
+  {
+    "name": "Maratona de São Paulo 2024",
+    "path": "corridas/abc123",
+    "type": "race",
+    "size": 256,
+    "sha": "abc123",
+    "url": "your-domain.vercel.app/api/contents/corridas/abc123",
+    "html_url": "https://your-domain.vercel.app/corridas/abc123",
+    "git_url": null,
+    "download_url": "https://example.com/race-image.jpg"
+  }
+]
+```
+
+For complete API documentation, see [api/README.md](api/README.md).
+
+To test the API locally:
+1. Open `test-api.html` in your browser
+2. Click "Buscar Conteúdos" to fetch data from the API endpoint

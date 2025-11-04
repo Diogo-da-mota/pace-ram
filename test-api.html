@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Contents Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f6f8fa;
+        }
+        h1 {
+            color: #24292e;
+        }
+        .container {
+            background: white;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .endpoint {
+            background: #f6f8fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        button {
+            background-color: #2ea44f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #2c974b;
+        }
+        button:disabled {
+            background-color: #94d3a2;
+            cursor: not-allowed;
+        }
+        .loading {
+            color: #586069;
+            font-style: italic;
+        }
+        .error {
+            color: #cb2431;
+            background-color: #ffeef0;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .response {
+            background: #f6f8fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .item {
+            background: white;
+            border: 1px solid #e1e4e8;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .item-name {
+            font-weight: 600;
+            color: #0366d6;
+        }
+        .item-type {
+            background: #0366d6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .item-type.race {
+            background: #2ea44f;
+        }
+        .item-type.category {
+            background: #6f42c1;
+        }
+        .item-type.event {
+            background: #0366d6;
+        }
+        .item-path {
+            color: #586069;
+            font-size: 14px;
+        }
+        .stats {
+            margin: 20px 0;
+            display: flex;
+            gap: 20px;
+        }
+        .stat {
+            background: #f6f8fa;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .stat-label {
+            color: #586069;
+            font-size: 12px;
+        }
+        .stat-value {
+            color: #24292e;
+            font-size: 24px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ API Contents Test</h1>
+        <p>Este é um teste do endpoint <code>/api/contents</code> que retorna dados em formato similar à API do GitHub.</p>
+        
+        <div class="endpoint">
+            <strong>Endpoint:</strong> /api/contents
+        </div>
+
+        <button id="fetchBtn" onclick="fetchContents()">Buscar Conteúdos</button>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Carregando...
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="stats" style="display: none;"></div>
+        
+        <div id="results" style="display: none;">
+            <h2>Resultados:</h2>
+            <div id="items"></div>
+        </div>
+        
+        <div id="rawResponse" style="display: none;">
+            <h3>Resposta JSON Completa:</h3>
+            <div class="response">
+                <pre id="jsonOutput"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchContents() {
+            const fetchBtn = document.getElementById('fetchBtn');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+            const rawResponse = document.getElementById('rawResponse');
+            const stats = document.getElementById('stats');
+            const items = document.getElementById('items');
+            const jsonOutput = document.getElementById('jsonOutput');
+
+            // Reset UI
+            fetchBtn.disabled = true;
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            results.style.display = 'none';
+            rawResponse.style.display = 'none';
+            stats.style.display = 'none';
+
+            try {
+                // Try to fetch from the API endpoint
+                const response = await fetch('/api/contents');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display stats
+                const races = data.filter(item => item.type === 'race').length;
+                const categories = data.filter(item => item.type === 'category').length;
+                const events = data.filter(item => item.type === 'event').length;
+                
+                stats.innerHTML = `
+                    <div class="stat">
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value">${data.length}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Corridas</div>
+                        <div class="stat-value">${races}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Categorias</div>
+                        <div class="stat-value">${categories}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Eventos</div>
+                        <div class="stat-value">${events}</div>
+                    </div>
+                `;
+                stats.style.display = 'flex';
+                
+                // Display items
+                items.innerHTML = data.map(item => `
+                    <div class="item">
+                        <div class="item-header">
+                            <span class="item-name">${item.name}</span>
+                            <span class="item-type ${item.type}">${item.type}</span>
+                        </div>
+                        <div class="item-path">${item.path}</div>
+                    </div>
+                `).join('');
+                
+                results.style.display = 'block';
+                
+                // Display raw JSON
+                jsonOutput.textContent = JSON.stringify(data, null, 2);
+                rawResponse.style.display = 'block';
+                
+            } catch (err) {
+                error.textContent = `Erro ao buscar dados: ${err.message}`;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                fetchBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
