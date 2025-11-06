@@ -14,6 +14,7 @@ import { useCalendario, NovoEventoData, EventoData } from "@/hooks/useCalendario
 import { useRedesSociais, NovaRedeSocialData, RedeSocialData } from "@/hooks/useRedesSociais";
 import { useOutros, NovoOutroData, OutroData } from "@/hooks/useOutros";
 import { useUrlPreview } from "@/hooks/useUrlPreview";
+import { useConfiguracoes } from "@/hooks/useConfiguracoes";
 import RacePreview from "@/components/RacePreview";
 
 import CorridaCard from "@/components/CorridaCard";
@@ -116,6 +117,25 @@ const Dashboard = () => {
   const [outroEditando, setOutroEditando] = useState<OutroData | null>(null);
   const [modalEditarOutroAberto, setModalEditarOutroAberto] = useState(false);
   const [carregandoOutros, setCarregandoOutros] = useState(false);
+
+  // Estados para configurações
+  const { config: configFromHook, salvarConfig, loading: loadingConfig } = useConfiguracoes();
+  const [configData, setConfigData] = useState({
+    whatsapp_numero: '',
+    whatsapp_mensagem: 'Olá! Gostaria de mais informações sobre as corridas.',
+    whatsapp_ativo: false
+  });
+
+  // Atualizar configData quando os dados do hook mudarem
+  useEffect(() => {
+    if (configFromHook) {
+      setConfigData(configFromHook);
+    }
+  }, [configFromHook]);
+
+  const handleSalvarConfig = async () => {
+    await salvarConfig(configData);
+  };
 
   // Hook para preview de URL
   const { metadata: urlMetadata, loading: urlLoading, error: urlError } = useUrlPreview(corridaData.link_externo);
@@ -508,12 +528,13 @@ const Dashboard = () => {
 
       <div className="w-full px-4 p-6">
         <Tabs value={activeTab} className="space-y-6">
-          <div className="grid w-full grid-cols-5 gap-2 mb-6 max-w-3xl mx-auto">
+          <div className="grid w-full grid-cols-6 gap-2 mb-6 max-w-4xl mx-auto">
             <Link to="/dashboard-corridas" className={activeTab === 'corridas' ? 'active' : ''}>Corridas</Link>
             <Link to="/dashboard-calendario" className={activeTab === 'calendario' ? 'active' : ''}>Calendário</Link>
             <Link to="/dashboard-redes-sociais" className={activeTab === 'redes-sociais' ? 'active' : ''}>Redes Sociais</Link>
             <Link to="/dashboard-outros" className={activeTab === 'outros' ? 'active' : ''}>Outros</Link>
             <Link to="/dashboard-background" className={activeTab === 'background' ? 'active' : ''}>Background</Link>
+            <Link to="/dashboard-configuracoes" className={activeTab === 'configuracoes' ? 'active' : ''}>Configurações</Link>
           </div>
 
           <TabsContent value="corridas" className="animate-fade-in">
@@ -1174,6 +1195,65 @@ const Dashboard = () => {
                 }}
               />
             </div>
+          </TabsContent>
+
+          <TabsContent value="configuracoes" className="animate-fade-in">
+            <Card className="p-6 bg-card shadow-lg border border-border">
+              <h2 className="text-2xl font-bold text-foreground mb-6">Configurações</h2>
+              
+              {/* Seção WhatsApp */}
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold">Botão WhatsApp Flutuante</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="whatsapp_numero">Número do WhatsApp</Label>
+                    <Input
+                      id="whatsapp_numero"
+                      placeholder="(00) 00000-0000"
+                      className="bg-input border-border text-foreground text-xs placeholder:text-muted-foreground"
+                      value={configData.whatsapp_numero}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                        const part1 = digits.slice(0, 2);
+                        const part2 = digits.slice(2, 7);
+                        const part3 = digits.slice(7, 11);
+                        const formatted = `${part1 ? `(${part1}` : ''}${part1.length === 2 ? ') ' : ''}${part2}${part3 ? `-${part3}` : ''}`;
+                        setConfigData({ ...configData, whatsapp_numero: formatted });
+                      }}
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Formato: DDD + número (ex: (62) 99999-9999)
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="whatsapp_mensagem">Mensagem Padrão</Label>
+                    <textarea
+                      id="whatsapp_mensagem"
+                      rows={3}
+                      className="w-full p-2 rounded border bg-input border-border text-foreground text-xs placeholder:text-muted-foreground"
+                      value={configData.whatsapp_mensagem}
+                      onChange={(e) => setConfigData({...configData, whatsapp_mensagem: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="whatsapp_ativo"
+                      checked={configData.whatsapp_ativo}
+                      onChange={(e) => setConfigData({...configData, whatsapp_ativo: e.target.checked})}
+                    />
+                    <Label htmlFor="whatsapp_ativo">Ativar botão flutuante na página inicial</Label>
+                  </div>
+
+                  <Button onClick={handleSalvarConfig} disabled={loadingConfig}>
+                    {loadingConfig ? 'Salvando...' : 'Salvar Configurações'}
+                  </Button>
+                </div>
+              </div>
+            </Card>
           </TabsContent>
         </Tabs>
         

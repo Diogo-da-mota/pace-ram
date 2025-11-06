@@ -54,6 +54,11 @@ const App = () => {
                 <Dashboard />
               </ProtectedRoute>
             } />
+            <Route path="/dashboard-configuracoes" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
             <Route path="/dashboard" element={<Navigate to="/dashboard-corridas" replace />} />
             <Route path="/calendario" element={<Calendario />} />
             <Route path="/admin/background" element={

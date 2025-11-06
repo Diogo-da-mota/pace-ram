@@ -12,6 +12,7 @@ import { useRedesSociaisPublicas } from "@/hooks/useRedesSociaisPublicas";
 import { useOutrosPublicos } from "@/hooks/useOutrosPublicos";
 import { formatDateToBrazilian } from "@/utils/dateFormatter";
 import RedeSocialCard from "@/components/RedeSocialCard";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { useState, useEffect } from "react";
 
 // Import das imagens geradas (para fallback)
@@ -206,6 +207,9 @@ const Index = () => {
         </div>
       </footer>
       </div>
+      
+      {/* WhatsApp Button Flutuante */}
+      <WhatsAppButton />
     </div>
   );
 };
