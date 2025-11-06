@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -210,6 +210,23 @@ export const useCorridas = () => {
     }
   };
 
+  // Separar corridas por data (mesma lógica da home)
+  const separarPorData = useCallback((todasCorridas: CorridaData[]) => {
+    const agora = new Date();
+    const hoje = agora.getFullYear() + '-' +
+      String(agora.getMonth() + 1).padStart(2, '0') + '-' +
+      String(agora.getDate()).padStart(2, '0');
+  
+    const recentes = todasCorridas
+      .filter(c => c.data_evento <= hoje)
+      .sort((a, b) => new Date(b.data_evento).getTime() - new Date(a.data_evento).getTime());
+  
+    const emBreve = todasCorridas
+      .filter(c => c.data_evento > hoje)
+      .sort((a, b) => new Date(a.data_evento).getTime() - new Date(b.data_evento).getTime());
+  
+    return { recentes, emBreve };
+  }, []);
   return {
     loading,
     criarCorrida,
@@ -217,6 +234,7 @@ export const useCorridas = () => {
     editarCorrida,
     excluirCorrida,
     buscarCorridaPorId,
-    toggleVisibilidade
+    toggleVisibilidade,
+    separarPorData,
   };
 };

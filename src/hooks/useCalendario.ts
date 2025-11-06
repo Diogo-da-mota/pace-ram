@@ -25,15 +25,17 @@ export interface EventoData extends NovoEventoData {
 
 // Mapeamento de status entre português (UI) e inglês (banco)
 const STATUS_MAP = {
+  'Inscrições abertas': 'inscricoes_abertas',
   'Inscrições Abertas': 'inscricoes_abertas',
   'Em Andamento': 'em_andamento',
+  'Inscrições encerrada': 'encerrado',
   'Encerrado': 'encerrado'
 } as const;
 
 const STATUS_REVERSE_MAP = {
-  'inscricoes_abertas': 'Inscrições Abertas',
+  'inscricoes_abertas': 'Inscrições abertas',
   'em_andamento': 'Em Andamento',
-  'encerrado': 'Encerrado'
+  'encerrado': 'Inscrições encerrada'
 } as const;
 
 // Função para converter status da UI para o banco
@@ -44,8 +46,8 @@ const mapStatusToDatabase = (status?: string): string => {
 
 // Função para converter status do banco para a UI
 const mapStatusFromDatabase = (status?: string): string => {
-  if (!status) return 'Inscrições Abertas';
-  return STATUS_REVERSE_MAP[status as keyof typeof STATUS_REVERSE_MAP] || 'Inscrições Abertas';
+  if (!status) return 'Inscrições abertas';
+  return STATUS_REVERSE_MAP[status as keyof typeof STATUS_REVERSE_MAP] || 'Inscrições abertas';
 };
 
 export const useCalendario = () => {

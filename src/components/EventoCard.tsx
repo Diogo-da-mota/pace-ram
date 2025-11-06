@@ -61,7 +61,7 @@ const EventoCard: React.FC<EventoCardProps> = ({ evento, animationDelay = 0 }) =
         };
       case 'encerrado':
         return {
-          text: 'Encerrado',
+          text: 'Inscrições encerrada',
           className: 'bg-red-500 text-white',
           icon: Clock
         };

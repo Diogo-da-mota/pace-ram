@@ -62,7 +62,7 @@ const Dashboard = () => {
     { value: '42k', label: '42K (Maratona)' }
   ];
   const [activeSection, setActiveSection] = useState("corridas");
-  const { loading: loadingCorrida, criarCorrida, editarCorrida, excluirCorrida, buscarCorridas, toggleVisibilidade } = useCorridas();
+  const { loading: loadingCorrida, criarCorrida, editarCorrida, excluirCorrida, buscarCorridas, toggleVisibilidade, separarPorData } = useCorridas();
   const { loading: loadingEvento, criarEvento, editarEvento, excluirEvento, buscarEventos } = useCalendario();
   const { loading: loadingRedeSocial, criarRedeSocial, editarRedeSocial, excluirRedeSocial, buscarRedesSociais } = useRedesSociais();
   const { loading: loadingOutro, criarOutro, editarOutro, excluirOutro, buscarOutros } = useOutros();
@@ -664,35 +664,75 @@ const Dashboard = () => {
             </div>
             
             {/* Seção de Corridas Criadas */}
-            <Card className="p-6 bg-card shadow-lg border border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Corridas Criadas</h2>
-              <p className="text-muted-foreground mb-6">
-                Gerencie suas corridas existentes - edite ou exclua conforme necessário
-              </p>
+            {/* Aplicar separação por data */}
+            {(() => {
+              const { recentes, emBreve } = separarPorData(corridas);
               
-              {carregandoCorridas ? (
-                <div className="flex justify-center items-center py-8">
-                  <div className="text-lg text-muted-foreground">Carregando corridas...</div>
-                </div>
-              ) : corridas.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="text-muted-foreground text-lg mb-2">Nenhuma corrida criada ainda</div>
-                  <div className="text-muted-foreground">Crie sua primeira corrida usando o formulário acima</div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                  {corridas.map((corrida) => (
-                    <CorridaCard
-                      key={corrida.id}
-                      corrida={corrida}
-                      onEdit={handleEditarCorrida}
-                      onDelete={handleExcluirCorrida}
-                      onToggleVisibilidade={handleToggleVisibilidade}
-                    />
-                  ))}
-                </div>
-              )}
-            </Card>
+              return (
+                <>
+                  {/* Seção Corridas Recentes */}
+                  <Card className="p-6 bg-card shadow-lg border border-border">
+                    <h2 className="text-2xl font-bold text-foreground mb-6">Corridas Recentes</h2>
+                    <p className="text-muted-foreground mb-6">
+                      Corridas que já aconteceram
+                    </p>
+                    
+                    {carregandoCorridas ? (
+                      <div className="flex justify-center items-center py-8">
+                        <div className="text-lg text-muted-foreground">Carregando...</div>
+                      </div>
+                    ) : recentes.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="text-muted-foreground">Nenhuma corrida recente</div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        {recentes.map((corrida) => (
+                          <CorridaCard 
+                            key={corrida.id} 
+                            corrida={corrida} 
+                            onEdit={handleEditarCorrida} 
+                            onDelete={handleExcluirCorrida} 
+                            onToggleVisibilidade={handleToggleVisibilidade} 
+                          /> 
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+      
+                  {/* Seção Corridas Em Breve */}
+                  <Card className="p-6 bg-card shadow-lg border border-border">
+                    <h2 className="text-2xl font-bold text-foreground mb-6">⏰ Corridas Em Breve</h2>
+                    <p className="text-muted-foreground mb-6">
+                      Corridas futuras
+                    </p>
+                    
+                    {carregandoCorridas ? (
+                      <div className="flex justify-center items-center py-8">
+                        <div className="text-lg text-muted-foreground">Carregando...</div>
+                      </div>
+                    ) : emBreve.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="text-muted-foreground">Nenhuma corrida futura</div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        {emBreve.map((corrida) => (
+                          <CorridaCard 
+                            key={corrida.id} 
+                            corrida={corrida} 
+                            onEdit={handleEditarCorrida} 
+                            onDelete={handleExcluirCorrida} 
+                            onToggleVisibilidade={handleToggleVisibilidade} 
+                          /> 
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                </>
+              );
+            })()}
+
           </TabsContent>
 
           <TabsContent value="calendario" className="animate-fade-in">
@@ -825,7 +865,7 @@ const Dashboard = () => {
                       <SelectContent className="bg-card border-border text-card-foreground shadow-lg z-50">
                         <SelectItem className="hover:bg-muted focus:bg-muted" value="Inscrições Abertas">Inscrições Abertas</SelectItem>
                         <SelectItem className="hover:bg-muted focus:bg-muted" value="Em Andamento">Em Andamento</SelectItem>
-                        <SelectItem className="hover:bg-muted focus:bg-muted" value="Encerrado">Encerrado</SelectItem>
+                        <SelectItem className="hover:bg-muted focus:bg-muted" value="Encerrado">Inscrições encerrada</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

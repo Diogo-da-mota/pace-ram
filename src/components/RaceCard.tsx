@@ -35,7 +35,7 @@ const getStatusConfig = (status?: string) => {
       };
     case 'encerrado':
       return {
-        text: 'Encerrado',
+        text: 'Inscrições encerrada',
         className: 'bg-red-500 hover:bg-red-600 text-white',
         icon: Clock
       };

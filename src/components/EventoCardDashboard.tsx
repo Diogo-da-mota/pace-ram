@@ -62,7 +62,7 @@ const EventoCardDashboard: React.FC<EventoCardDashboardProps> = ({ evento, onEdi
         };
       case 'encerrado':
         return {
-          text: 'Encerrado',
+          text: 'Inscrições encerrada',
           className: 'bg-red-500 text-white',
           icon: Clock
         };

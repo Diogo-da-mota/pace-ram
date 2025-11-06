@@ -36,7 +36,7 @@ const EditEventoModal = ({ evento, isOpen, onClose, onSave, loading = false }: E
     data_evento: '',
     local: '',
     link_externo: '',
-    status: 'Inscrições Abertas',
+    status: 'Inscrições abertas',
     distancia: [],
     horario: '',
     participantes: ''
@@ -55,7 +55,7 @@ const EditEventoModal = ({ evento, isOpen, onClose, onSave, loading = false }: E
         data_evento: evento.data_evento || '',
         local: evento.local || '',
         link_externo: evento.link_externo || '',
-        status: evento.status || 'Inscrições Abertas', // Garantir valor padrão
+        status: evento.status || 'Inscrições abertas', // Garantir valor padrão
         distancia: evento.distancia || [],
         horario: evento.horario || '',
         participantes: evento.participantes || ''
@@ -68,7 +68,7 @@ const EditEventoModal = ({ evento, isOpen, onClose, onSave, loading = false }: E
         data_evento: '',
         local: '',
         link_externo: '',
-        status: 'Inscrições Abertas',
+        status: 'Inscrições abertas',
         distancia: [],
         horario: '',
         participantes: ''
@@ -94,7 +94,7 @@ const EditEventoModal = ({ evento, isOpen, onClose, onSave, loading = false }: E
     // Garantir que o status tenha um valor válido antes de enviar
     const dadosParaEnviar = {
       ...formData,
-      status: formData.status || 'Inscrições Abertas'
+      status: formData.status || 'Inscrições abertas'
     };
 
     await onSave(evento.id, dadosParaEnviar);
@@ -106,7 +106,7 @@ const EditEventoModal = ({ evento, isOpen, onClose, onSave, loading = false }: E
       data_evento: '',
       local: '',
       link_externo: '',
-      status: 'Inscrições Abertas',
+      status: 'Inscrições abertas',
       distancia: [],
       horario: '',
       participantes: ''
@@ -303,16 +303,15 @@ const EditEventoModal = ({ evento, isOpen, onClose, onSave, loading = false }: E
                   Status *
                 </Label>
                 <Select
-                  value={formData.status || 'Inscrições Abertas'}
+                  value={formData.status || 'Inscrições abertas'}
                   onValueChange={(value) => setFormData({...formData, status: value})}
                 >
                   <SelectTrigger id="edit-evento-status" className="bg-input border-border w-full">
                     <SelectValue placeholder="Selecione o status" />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-border text-card-foreground">
-                    <SelectItem className="hover:bg-muted" value="Inscrições Abertas">Inscrições Abertas</SelectItem>
-                    <SelectItem className="hover:bg-muted" value="Em Andamento">Em Andamento</SelectItem>
-                    <SelectItem className="hover:bg-muted" value="Encerrado">Encerrado</SelectItem>
+                    <SelectItem className="hover:bg-muted" value="Inscrições abertas">Inscrições abertas</SelectItem>
+                    <SelectItem className="hover:bg-muted" value="Encerrado">Inscrições encerrada</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
