@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Calendar, Sun, Moon } from "lucide-react";
+import { Calendar, Sun, Moon, LogIn } from "lucide-react";
 import { useDarkMode } from '@/hooks/useDarkMode';
 
 const Header = () => {
@@ -41,6 +41,16 @@ const Header = () => {
             <Calendar className="w-5 h-5 text-blue-400 mr-2" />
             Calendário
           </Link>
+
+          {/* Botão Login (Mobile) */}
+          <Link
+            to="/login"
+            className="text-white transition-colors duration-200 font-medium text-xl flex items-center"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            <LogIn className="w-5 h-5 text-white mr-2" />
+            Login
+          </Link>
         </div>
         
         <nav className="hidden md:flex items-center space-x-8">
@@ -66,14 +76,22 @@ const Header = () => {
           
           <Link 
             to="/calendario" 
-            className="text-blue-400 transition-colors duration-200 font-medium text-xl flex items-center"
+            className="text-blue-400 transition-colors duração-200 font-medium text-xl flex items-center"
             style={{ fontFamily: 'Roboto, sans-serif' }}
           >
             <Calendar className="w-5 h-5 text-blue-400 mr-2" />
             Calendário
           </Link>
 
-          {/* Login removido: acesso apenas via URL direta */}
+          {/* Botão Login (Desktop) */}
+          <Link 
+            to="/login" 
+            className="text-white hover:text-blue-400 transition-colors duration-200 font-medium text-xl flex items-center"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            <LogIn className="w-5 h-5 text-white mr-2" />
+            Login
+          </Link>
         </nav>
 
       </div>
