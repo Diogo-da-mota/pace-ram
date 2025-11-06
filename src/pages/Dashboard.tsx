@@ -8,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useCorridas, NovaCorridaData, CorridaData } from "@/hooks/useCorridas";
 import { useCalendario, NovoEventoData, EventoData } from "@/hooks/useCalendario";
 import { useRedesSociais, NovaRedeSocialData, RedeSocialData } from "@/hooks/useRedesSociais";
@@ -19,7 +19,6 @@ import RacePreview from "@/components/RacePreview";
 
 import CorridaCard from "@/components/CorridaCard";
 import EditCorridaModal from "@/components/EditCorridaModal";
-import EventoCard from "@/components/EventoCard";
 import EventoCardDashboard from "@/components/EventoCardDashboard";
 import EditEventoModal from "@/components/EditEventoModal";
 import RedeSocialCard from "@/components/RedeSocialCard";
@@ -27,7 +26,6 @@ import EditRedeSocialModal from "@/components/EditRedeSocialModal";
 import OutroCard from "@/components/OutroCard";
 import EditOutroModal from "@/components/EditOutroModal";
 import { BackgroundUploadForm } from "@/components/admin/BackgroundUploadForm";
-import { isValidUrl } from "@/utils/urlUtils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
 import { 
@@ -47,7 +45,7 @@ import { ExternalLink } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading, signOut } = useAuthSession();
+  const { session, signOut } = useAuthSession();
   const isMobile = useIsMobile();
 
   // Opções de distância para eventos
@@ -238,8 +236,11 @@ const Dashboard = () => {
   // Auto-preencher campos com metadados da URL
   useEffect(() => {
     // Auto-preencher título apenas se não foi editado manualmente e está vazio
-    if (urlMetadata && !tituloEditadoManualmente && !corridaData.titulo && urlMetadata.title) {
-      setCorridaData(prev => ({ ...prev, titulo: urlMetadata.title }));
+    if (urlMetadata && !tituloEditadoManualmente && !corridaData.titulo) {
+      setCorridaData((prev) => ({
+        ...prev,
+        titulo: urlMetadata?.title || prev.titulo || '',
+      }));
     }
     
     // Auto-preencher imagem se estiver vazia
@@ -449,15 +450,6 @@ const Dashboard = () => {
     setModalEditarRedeSocialAberto(true);
   };
   
-  const handleSalvarEdicaoRedeSocial = async (id: string, dados: any) => {
-    const resultado = await editarRedeSocial(id, dados);
-    if (resultado.success) {
-      setModalEditarRedeSocialAberto(false);
-      setRedeSocialEditando(null);
-      carregarRedesSociais();
-    }
-  };
-  
   const handleExcluirRedeSocial = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir esta rede social?')) {
       const resultado = await excluirRedeSocial(id);
@@ -533,33 +525,35 @@ const Dashboard = () => {
             <div className="grid grid-cols-3 gap-2">
               <Link
                 to="/dashboard-corridas"
-                className={`${activeTab === 'corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-gray-50 shadow-sm`}
+                className={`${activeTab === 'corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
               >
                 Corridas
               </Link>
               <Link
                 to="/dashboard-calendario"
-                className={`${activeTab === 'calendario' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-gray-50 shadow-sm`}
+                className={`${activeTab === 'calendario' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
               >
                 Calendário
               </Link>
-              <Link
-                to="/dashboard-redes-sociais"
-                className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2= px-2 rounded-md border border-border bg-black text-foreground hover:bg-gray-50 shadow-sm`}
-              >
-                Redes Sociais
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+              {/* Troca: colocar "Outros" na primeira linha */}
               <Link
                 to="/dashboard-outros"
-                className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-gray-50 shadow-sm`}
+                className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-2 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
               >
                 Outros
               </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {/* Troca: mover "Redes Sociais" para a segunda linha */}
+              <Link
+                to="/dashboard-redes-sociais"
+                className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
+              >
+                Redes Sociais
+              </Link>
               <Link
                 to="/dashboard-configuracoes"
-                className={`${activeTab === 'configuracoes' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-gray-50 shadow-sm`}
+                className={`${activeTab === 'configuracoes' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-wite shadow-sm`}
               >
                 Configurações
               </Link>
@@ -568,12 +562,12 @@ const Dashboard = () => {
 
           {/* Navegação - Desktop (linha única com 6 colunas) */}
           <div className="hidden md:grid w-full grid-cols-6 gap-2 mb-6 max-w-4xl mx-auto">
-            <Link to="/dashboard-corridas" className={`${activeTab === 'corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-white text-foreground hover:bg-gray-50 shadow-sm`}>Corridas</Link>
-            <Link to="/dashboard-calendario" className={`${activeTab === 'calendario' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-white text-foreground hover:bg-gray-50 shadow-sm`}>Calendário</Link>
-            <Link to="/dashboard-redes-sociais" className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-white text-foreground hover:bg-gray-50 shadow-sm`}>Redes Sociais</Link>
-            <Link to="/dashboard-outros" className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-white text-foreground hover:bg-gray-50 shadow-sm`}>Outros</Link>
-            <Link to="/dashboard-background" className={`${activeTab === 'background' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-white text-foreground hover:bg-gray-50 shadow-sm`}>Background</Link>
-            <Link to="/dashboard-configuracoes" className={`${activeTab === 'configuracoes' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-white text-foreground hover:bg-gray-50 shadow-sm`}>Configurações</Link>
+            <Link to="/dashboard-corridas" className={`${activeTab === 'corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Corridas</Link>
+            <Link to="/dashboard-calendario" className={`${activeTab === 'calendario' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Calendário</Link>
+            <Link to="/dashboard-redes-sociais" className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Redes Sociais</Link>
+            <Link to="/dashboard-outros" className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Outros</Link>
+            <Link to="/dashboard-background" className={`${activeTab === 'background' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Background</Link>
+            <Link to="/dashboard-configuracoes" className={`${activeTab === 'configuracoes' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Configurações</Link>
           </div>
 
           <TabsContent value="corridas" className="animate-fade-in">
@@ -962,7 +956,10 @@ const Dashboard = () => {
                   {eventos.map((evento, index) => (
                     <EventoCardDashboard
                       key={evento.id}
-                      evento={evento}
+                      evento={{
+                        ...evento,
+                        status: evento.status as 'inscricoes_abertas' | 'em_andamento' | 'encerrado' | undefined
+                      }}
                       onEdit={handleEditarEvento}
                       onDelete={handleExcluirEvento}
                       animationDelay={index * 0.1}
