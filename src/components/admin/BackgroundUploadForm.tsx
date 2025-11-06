@@ -287,68 +287,6 @@ export const BackgroundUploadForm: React.FC<BackgroundUploadFormProps> = ({ onSu
         </CardContent>
       </Card>
 
-      {/* Configuração atual */}
-      {(() => {
-        const desktopConfig = configs.find(c => c.tipo_dispositivo === 'desktop');
-        return desktopConfig && !isLoadingConfig && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Configuração Atual</CardTitle>
-              <CardDescription>
-                Background ativo no site
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <Label className="text-xs text-gray-500">Posição X</Label>
-                  <p className="font-medium">{desktopConfig.posicao_x}%</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-gray-500">Posição Y</Label>
-                  <p className="font-medium">{desktopConfig.posicao_y}%</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-gray-500">Zoom</Label>
-                  <p className="font-medium">{desktopConfig.zoom}%</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-gray-500">Opacidade</Label>
-                  <p className="font-medium">{Math.round(desktopConfig.opacidade * 100)}%</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-gray-500">Status</Label>
-                  <p className="font-medium flex items-center gap-1">
-                    {desktopConfig.ativo ? (
-                      <>
-                        <Eye className="h-3 w-3" />
-                        Ativo
-                      </>
-                    ) : (
-                      <>
-                        <EyeOff className="h-3 w-3" />
-                        Inativo
-                      </>
-                    )}
-                  </p>
-                </div>
-              </div>
-              {desktopConfig.url_imagem && (
-                <div className="mt-4">
-                  <Label className="text-xs text-gray-500">Imagem Atual</Label>
-                  <div className="mt-2 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                    <img
-                      src={desktopConfig.url_imagem}
-                      alt="Background atual"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })()}
     </div>
   );
 };
