@@ -520,8 +520,9 @@ const Dashboard = () => {
 
       <div className="w-full px-4 p-6">
         <Tabs value={activeTab} className="space-y-6">
-          {/* Navegação - Mobile (duas linhas): 3 acima, 2 abaixo */}
+          {/* Navegação - Mobile (duas linhas): 3 + 3 */}
           <div className="md:hidden space-y-2 mb-6 max-w-4xl mx-auto">
+            {/* Primeira linha: Corridas, Calendário, Outros */}
             <div className="grid grid-cols-3 gap-2">
               <Link
                 to="/dashboard-corridas"
@@ -535,7 +536,6 @@ const Dashboard = () => {
               >
                 Calendário
               </Link>
-              {/* Troca: colocar "Outros" na primeira linha */}
               <Link
                 to="/dashboard-outros"
                 className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-2 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
@@ -543,13 +543,20 @@ const Dashboard = () => {
                 Outros
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {/* Troca: mover "Redes Sociais" para a segunda linha */}
+
+            {/* Segunda linha: Redes Sociais, Portfolio, Configurações */}
+            <div className="grid grid-cols-3 gap-2">
               <Link
                 to="/dashboard-redes-sociais"
                 className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
               >
                 Redes Sociais
+              </Link>
+              <Link
+                to="/dashboard-portfolio"
+                className={`${activeTab === 'portfolio' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
+              >
+                Portfolio
               </Link>
               <Link
                 to="/dashboard-configuracoes"
