@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Calendar, Sun, Moon, LogIn } from "lucide-react";
+import { Calendar, Sun, Moon } from "lucide-react";
 import { useDarkMode } from '@/hooks/useDarkMode';
 
 const Header = () => {
   const { isDark, toggleDarkMode } = useDarkMode();
   const location = useLocation();
   const isHome = location.pathname === "/";
-  const hideLogin = isHome || location.pathname === "/calendario";
+  const hideLogin = true;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm">
@@ -44,18 +44,6 @@ const Header = () => {
             <Calendar className="w-5 h-5 text-blue-400 mr-2" />
             Calendário
           </Link>
-
-          {/* Botão Login (Mobile) */}
-          {!hideLogin && (
-            <Link
-              to="/login"
-              className="text-white transition-colors duration-200 font-medium text-xl flex items-center"
-              style={{ fontFamily: 'Roboto, sans-serif' }}
-            >
-              <LogIn className="w-5 h-5 text-white mr-2" />
-              Login
-            </Link>
-          )}
         </div>
         
         <nav className="hidden md:flex items-center space-x-8">
@@ -64,6 +52,12 @@ const Header = () => {
             className="text-white hover:text-blue-400 transition-colors duration-200 font-medium"
           >
             Início
+          </Link>
+          <Link 
+            to="/portfolio" 
+            className="text-white hover:text-blue-400 transition-colors duration-200 font-medium"
+          >
+            Portfolio
           </Link>
           
           {/* Botão Dark Mode */}
@@ -87,18 +81,6 @@ const Header = () => {
             <Calendar className="w-5 h-5 text-blue-400 mr-2" />
             Calendário
           </Link>
-
-          {/* Botão Login (Desktop) */}
-          {!hideLogin && (
-            <Link 
-              to="/login" 
-              className="text-white hover:text-blue-400 transition-colors duration-200 font-medium text-xl flex items-center"
-              style={{ fontFamily: 'Roboto, sans-serif' }}
-            >
-              <LogIn className="w-5 h-5 text-white mr-2" />
-              Login
-            </Link>
-          )}
         </nav>
 
       </div>

@@ -25,7 +25,7 @@ import RedeSocialCard from "@/components/RedeSocialCard";
 import EditRedeSocialModal from "@/components/EditRedeSocialModal";
 import OutroCard from "@/components/OutroCard";
 import EditOutroModal from "@/components/EditOutroModal";
-import { BackgroundUploadForm } from "@/components/admin/BackgroundUploadForm";
+import { ExternalLinkForm } from "@/components/admin/ExternalLinkForm";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
 import { 
@@ -508,8 +508,8 @@ const Dashboard = () => {
             
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-border text-foreground hover:bg-accent" onClick={() => navigate("/")}>
-              Ver Site
+            <Button asChild variant="outline" className="border-border text-foreground hover:bg-accent">
+              <a href="/" target="_blank" rel="noopener noreferrer">Ver Site</a>
             </Button>
             <Button variant="outline" className="border-border text-foreground hover:bg-accent" onClick={handleLogout}>
               Sair
@@ -566,7 +566,7 @@ const Dashboard = () => {
             <Link to="/dashboard-calendario" className={`${activeTab === 'calendario' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Calendário</Link>
             <Link to="/dashboard-redes-sociais" className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Redes Sociais</Link>
             <Link to="/dashboard-outros" className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Outros</Link>
-            <Link to="/dashboard-background" className={`${activeTab === 'background' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Background</Link>
+            <Link to="/dashboard-portfolio" className={`${activeTab === 'portfolio' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Portfolio</Link>
             <Link to="/dashboard-configuracoes" className={`${activeTab === 'configuracoes' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Configurações</Link>
           </div>
 
@@ -1222,14 +1222,9 @@ const Dashboard = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="background" className="animate-fade-in">
+          <TabsContent value="portfolio" className="animate-fade-in">
             <div className="max-w-4xl mx-auto">
-              <BackgroundUploadForm 
-                onSuccess={() => {
-                  // Callback opcional para quando o upload for bem-sucedido
-                  // console.log('Background atualizado com sucesso!'); // Removido log de debug
-                }}
-              />
+              <ExternalLinkForm />
             </div>
           </TabsContent>
 

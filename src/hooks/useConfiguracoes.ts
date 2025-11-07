@@ -15,7 +15,8 @@ export const useConfiguracoes = () => {
       const { data, error } = await supabase
         .from('configuracoes')
         .select('*')
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (error) throw error;
       if (data) setConfig(data);

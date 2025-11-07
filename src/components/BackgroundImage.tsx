@@ -9,6 +9,7 @@ const BackgroundImage = React.memo(({ className = "" }: BackgroundImageProps) =>
   const { backgroundDesktop, backgroundMobile, loading } = useBackgroundPublico();
   const [isMobile, setIsMobile] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Detectar se é dispositivo móvel
   useEffect(() => {
@@ -27,20 +28,38 @@ const BackgroundImage = React.memo(({ className = "" }: BackgroundImageProps) =>
     return isMobile ? backgroundMobile : backgroundDesktop;
   }, [isMobile, backgroundMobile, backgroundDesktop]);
 
+  // Resetar estados ao trocar de imagem
+  useEffect(() => {
+    setImageLoaded(false);
+    setImageError(false);
+  }, [currentBackground?.url_imagem]);
+
   // Memoizar o estilo do background para evitar recriação desnecessária
   const backgroundStyle = useMemo(() => {
     if (!currentBackground) return {};
-    
-    return {
-      backgroundImage: `url(${currentBackground.url_imagem})`,
+    const base = {
       backgroundPosition: `${currentBackground.posicao_x}% ${currentBackground.posicao_y}%`,
       backgroundSize: `${currentBackground.zoom * 100}%`,
       opacity: currentBackground.opacidade,
       backgroundRepeat: 'no-repeat',
       // Otimizar backgroundAttachment para mobile
       backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+    } as React.CSSProperties;
+
+    if (imageError) {
+      // Fallback visual simples quando a imagem falha
+      return {
+        ...base,
+        backgroundImage: 'none',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)'
+      };
+    }
+
+    return {
+      ...base,
+      backgroundImage: `url(${currentBackground.url_imagem})`,
     };
-  }, [currentBackground, isMobile]);
+  }, [currentBackground, isMobile, imageError]);
 
   // Se não há background configurado ou ainda está carregando
   if (loading || !currentBackground) {
@@ -48,6 +67,11 @@ const BackgroundImage = React.memo(({ className = "" }: BackgroundImageProps) =>
   }
 
   const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+  const handleImageError = () => {
+    setImageError(true);
+    // Revela o fallback com a mesma transição
     setImageLoaded(true);
   };
 
@@ -59,6 +83,8 @@ const BackgroundImage = React.memo(({ className = "" }: BackgroundImageProps) =>
         alt=""
         style={{ display: 'none' }}
         onLoad={handleImageLoad}
+        onError={handleImageError}
+        crossOrigin="anonymous"
         loading="lazy"
       />
       
