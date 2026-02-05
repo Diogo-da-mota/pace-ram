@@ -564,17 +564,23 @@ const Dashboard = () => {
               >
                 Configurações
               </Link>
+              <Link
+                to="/dashboard-Venda-das-Corridas"
+                className={`${activeTab === 'Venda-das-Corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}
+              >
+                Venda das Corridas
+              </Link>
             </div>
           </div>
 
-          {/* Navegação - Desktop (linha única com 6 colunas) */}
-          <div className="hidden md:grid w-full grid-cols-6 gap-2 mb-6 max-w-4xl mx-auto">
+          <div className="hidden md:grid w-full grid-cols-7 gap-9 mb-6 max-w-8xl mx-auto">
             <Link to="/dashboard-corridas" className={`${activeTab === 'corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Corridas</Link>
             <Link to="/dashboard-calendario" className={`${activeTab === 'calendario' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Calendário</Link>
             <Link to="/dashboard-redes-sociais" className={`${activeTab === 'redes-sociais' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Redes Sociais</Link>
             <Link to="/dashboard-outros" className={`${activeTab === 'outros' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Outros</Link>
             <Link to="/dashboard-portfolio" className={`${activeTab === 'portfolio' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Portfolio</Link>
             <Link to="/dashboard-configuracoes" className={`${activeTab === 'configuracoes' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Configurações</Link>
+            <Link to="/dashboard-Venda-das-Corridas" className={`${activeTab === 'Venda-das-Corridas' ? 'active' : ''} w-full text-center py-2 px-3 rounded-md border border-border bg-black text-foreground hover:bg-black shadow-sm`}>Venda das Corridas</Link>
           </div>
 
           <TabsContent value="corridas" className="animate-fade-in">
@@ -1291,6 +1297,13 @@ const Dashboard = () => {
                   </Button>
                 </div>
               </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="Venda-das-Corridas" className="animate-fade-in">
+            <Card className="p-6 bg-card shadow-lg border border-border">
+              <h2 className="text-2xl font-bold text-foreground mb-6">Venda das Corridas</h2>
+              <p className="text-muted-foreground">Conteúdo da aba Venda das Corridas.</p>
             </Card>
           </TabsContent>
         </Tabs>

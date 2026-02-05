@@ -65,6 +65,11 @@ const App = () => {
                 <Dashboard />
               </ProtectedRoute>
             } />
+            <Route path="/dashboard-Venda-das-Corridas" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
             <Route path="/dashboard" element={<Navigate to="/dashboard-corridas" replace />} />
             <Route path="/calendario" element={<Calendario />} />
             <Route path="/admin/background" element={
