@@ -176,33 +176,58 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {filtroPessoa === 'todos' ? (
           <>
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-3 md:p-6 text-white shadow-lg">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium">Faturamento Total</p>
-                  <h3 className="text-xl md:text-3xl font-bold mt-1">R$ {formatarMoeda(totais.faturamentoTotal)}</h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Faturamento Total</p>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.faturamentoTotal)}</h3>
                 </div>
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-white" />
+                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
                 </div>
               </div>
-              <p className="text-blue-100 text-xs">Soma de todas as vendas brutas</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs">Soma de todas as vendas brutas</p>
             </div>
 
-            <div className="bg-zinc-900 dark:bg-zinc-800 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <div className="bg-zinc-900 dark:bg-zinc-100 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-zinc-400 text-sm font-medium">Lucro Líquido</p>
-                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-white dark:text-zinc-100">R$ {formatarMoeda(totais.lucroLiquidoTotal)}</h3>
+                  <p className="text-zinc-400 dark:text-zinc-600 text-sm font-medium">Lucro Líquido</p>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-white dark:text-zinc-900">R$ {formatarMoeda(totais.lucroLiquidoTotal)}</h3>
                 </div>
-                <div className="p-2 bg-zinc-800 dark:bg-zinc-700 rounded-lg">
-                  <DollarSign className="w-6 h-6 text-green-500" />
+                <div className="p-2 bg-zinc-800 dark:bg-zinc-200 rounded-lg">
+                  <DollarSign className="w-6 h-6 text-white dark:text-zinc-900" />
                 </div>
               </div>
-              <p className="text-zinc-500 text-xs">Após taxas, freelancers e despesas</p>
+              <p className="text-zinc-500 dark:text-zinc-500 text-xs">Após taxas, freelancers e despesas</p>
             </div>
 
             <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Gasto com Freelancers</p>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.gastoFreelancers)}</h3>
+                </div>
+                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+                  <Users className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Despesas Extras</p>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.despesasTotal)}</h3>
+                </div>
+                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
+                </div>
+              </div>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Viagem, Lanche, Gasolina</p>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Ganho Diogo</p>
@@ -214,7 +239,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Ganho Aziel</p>
@@ -225,41 +250,30 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                 </div>
               </div>
             </div>
-
-            <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl p-3 md:p-6 border border-red-100 dark:border-red-900/30 shadow-sm">
-              <p className="text-red-600/70 dark:text-red-400/70 text-sm font-medium uppercase">Gasto com Freelancers</p>
-              <h3 className="text-lg md:text-2xl font-bold mt-1 text-red-600 dark:text-red-400">R$ {formatarMoeda(totais.gastoFreelancers)}</h3>
-            </div>
-
-            <div className="bg-orange-50 dark:bg-orange-950/20 rounded-2xl p-3 md:p-6 border border-orange-100 dark:border-orange-900/30 shadow-sm">
-              <p className="text-orange-600/70 dark:text-orange-400/70 text-sm font-medium uppercase">Despesas Extras</p>
-              <h3 className="text-lg md:text-2xl font-bold mt-1 text-orange-600 dark:text-orange-400">R$ {formatarMoeda(totais.despesasTotal)}</h3>
-              <p className="text-orange-600/50 text-xs mt-1">Viagem, Lanche, Gasolina</p>
-            </div>
           </>
         ) : (
           <>
-            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-3 md:p-6 text-white shadow-lg md:col-span-2">
+            <div className="bg-zinc-900 dark:bg-zinc-100 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Ganho Total de {filtroPessoa}</p>
-                  <h3 className="text-2xl md:text-4xl font-bold mt-1">R$ {formatarMoeda(totais.ganhosPessoaSelecionada)}</h3>
+                  <p className="text-zinc-400 dark:text-zinc-600 text-sm font-medium">Ganho Total de {filtroPessoa}</p>
+                  <h3 className="text-2xl md:text-4xl font-bold mt-1 text-white dark:text-zinc-900">R$ {formatarMoeda(totais.ganhosPessoaSelecionada)}</h3>
                 </div>
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <DollarSign className="w-8 h-8 text-white" />
+                <div className="p-2 bg-zinc-800 dark:bg-zinc-200 rounded-lg">
+                  <DollarSign className="w-8 h-8 text-white dark:text-zinc-900" />
                 </div>
               </div>
-              <p className="text-green-100 text-sm">Neste período selecionado</p>
+              <p className="text-zinc-500 dark:text-zinc-500 text-sm">Neste período selecionado</p>
             </div>
 
-            <div className="bg-zinc-900 dark:bg-zinc-800 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm md:col-span-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-zinc-400 text-sm font-medium">Custo para Empresa</p>
-                  <h3 className="text-2xl md:text-4xl font-bold mt-1 text-white dark:text-zinc-100">R$ {formatarMoeda(totais.custoPessoaSelecionada)}</h3>
+                  <p className="text-zinc-500 text-sm font-medium">Custo para Empresa</p>
+                  <h3 className="text-2xl md:text-4xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.custoPessoaSelecionada)}</h3>
                 </div>
-                <div className="p-2 bg-zinc-800 dark:bg-zinc-700 rounded-lg">
-                  <TrendingUp className="w-8 h-8 text-red-500" />
+                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+                  <TrendingUp className="w-8 h-8 text-zinc-900 dark:text-zinc-100" />
                 </div>
               </div>
               <p className="text-zinc-500 text-sm">Quanto foi pago a este profissional</p>
@@ -284,8 +298,9 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                 {filtroPessoa === 'todos' ? (
                   <>
                     <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Faturamento</th>
-                    <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Lucro Líquido</th>
+                    <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Freelancer</th>
                     <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Despesas</th>
+                    <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Lucro Líquido</th>
                   </>
                 ) : (
                   <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Valor Recebido</th>
@@ -324,15 +339,18 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                         <td className="px-3 py-2 md:px-6 md:py-4 font-medium text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
                           R$ {formatarMoeda(totalEvento)}
                         </td>
-                        <td className="px-3 py-2 md:px-6 md:py-4 text-green-600 dark:text-green-400 font-bold whitespace-nowrap">
-                          R$ {formatarMoeda(lucroLiquido)}
+                        <td className="px-3 py-2 md:px-6 md:py-4 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
+                          R$ {formatarMoeda(totalFreelancers)}
                         </td>
-                        <td className="px-3 py-2 md:px-6 md:py-4 text-orange-600 dark:text-orange-400 whitespace-nowrap">
+                        <td className="px-3 py-2 md:px-6 md:py-4 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                           R$ {formatarMoeda(totalDespesas)}
+                        </td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 text-zinc-900 dark:text-zinc-100 font-bold whitespace-nowrap">
+                          R$ {formatarMoeda(lucroLiquido)}
                         </td>
                       </>
                     ) : (
-                      <td className="px-3 py-2 md:px-6 md:py-4 font-bold text-green-600 dark:text-green-400 whitespace-nowrap">
+                      <td className="px-3 py-2 md:px-6 md:py-4 font-bold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
                         R$ {formatarMoeda(valorPessoa)}
                       </td>
                     )}

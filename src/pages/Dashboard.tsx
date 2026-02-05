@@ -65,7 +65,7 @@ const Dashboard = () => {
     { value: '42k', label: '42K (Maratona)' }
   ];
   const location = useLocation();
-  const activeTab = location.pathname.replace('/dashboard-', '') || 'corridas';
+  const activeTab = location.pathname.replace('/dashboard-', '').split('/')[0] || 'corridas';
   const { loading: loadingCorrida, criarCorrida, editarCorrida, excluirCorrida, buscarCorridas, toggleVisibilidade, separarPorData } = useCorridas();
   const { loading: loadingEvento, criarEvento, editarEvento, excluirEvento, buscarEventos } = useCalendario();
   const { loading: loadingRedeSocial, criarRedeSocial, excluirRedeSocial, buscarRedesSociais } = useRedesSociais();

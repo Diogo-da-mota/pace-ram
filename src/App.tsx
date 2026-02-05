@@ -65,7 +65,7 @@ const App = () => {
                 <Dashboard />
               </ProtectedRoute>
             } />
-            <Route path="/dashboard-Venda-das-Corridas" element={
+            <Route path="/dashboard-Venda-das-Corridas/*" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
