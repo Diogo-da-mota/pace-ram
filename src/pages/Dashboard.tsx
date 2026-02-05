@@ -42,6 +42,9 @@ import {
   FaSnapchat 
 } from 'react-icons/fa';
 import { ExternalLink } from 'lucide-react';
+import { GestaoVendas } from "@/components/vendas/GestaoVendas";
+
+// Tipos movidos para components/vendas/types.ts
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -65,7 +68,7 @@ const Dashboard = () => {
   const activeTab = location.pathname.replace('/dashboard-', '') || 'corridas';
   const { loading: loadingCorrida, criarCorrida, editarCorrida, excluirCorrida, buscarCorridas, toggleVisibilidade, separarPorData } = useCorridas();
   const { loading: loadingEvento, criarEvento, editarEvento, excluirEvento, buscarEventos } = useCalendario();
-  const { loading: loadingRedeSocial, criarRedeSocial, editarRedeSocial, excluirRedeSocial, buscarRedesSociais } = useRedesSociais();
+  const { loading: loadingRedeSocial, criarRedeSocial, excluirRedeSocial, buscarRedesSociais } = useRedesSociais();
   const { loading: loadingOutro, criarOutro, editarOutro, excluirOutro, buscarOutros } = useOutros();
 
   // Estados para o formulário de corridas
@@ -123,6 +126,7 @@ const Dashboard = () => {
     whatsapp_mensagem: 'Olá! Gostaria de mais informações sobre as corridas.',
     whatsapp_ativo: false
   });
+  // Estados de venda movidos para GestaoVendas
 
   // Atualizar configData quando os dados do hook mudarem
   useEffect(() => {
@@ -134,6 +138,8 @@ const Dashboard = () => {
   const handleSalvarConfig = async () => {
     await salvarConfig(configData);
   };
+
+// Componentes de Venda movidos para src/components/vendas
 
   // Hook para preview de URL
   const { metadata: urlMetadata, loading: urlLoading, error: urlError } = useUrlPreview(corridaData.link_externo);
@@ -1301,10 +1307,7 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="Venda-das-Corridas" className="animate-fade-in">
-            <Card className="p-6 bg-card shadow-lg border border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Venda das Corridas</h2>
-              <p className="text-muted-foreground">Conteúdo da aba Venda das Corridas.</p>
-            </Card>
+            <GestaoVendas />
           </TabsContent>
         </Tabs>
         
@@ -1360,4 +1363,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
