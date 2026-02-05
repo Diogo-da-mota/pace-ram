@@ -176,7 +176,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {filtroPessoa === 'todos' ? (
           <>
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Faturamento Total</p>
@@ -189,7 +189,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-zinc-500 dark:text-zinc-400 text-xs">Soma de todas as vendas brutas</p>
             </div>
 
-            <div className="bg-zinc-900 dark:bg-zinc-100 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-zinc-900 dark:bg-zinc-100 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm border-l-4 border-l-zinc-100 dark:border-l-zinc-900">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-400 dark:text-zinc-600 text-sm font-medium">Lucro Líquido</p>
@@ -202,7 +202,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-zinc-500 dark:text-zinc-500 text-xs">Após taxas, freelancers e despesas</p>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Gasto com Freelancers</p>
@@ -214,7 +214,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Despesas Extras</p>
@@ -227,7 +227,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Viagem, Lanche, Gasolina</p>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2 border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Ganho Diogo</p>
@@ -239,7 +239,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2 border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Ganho Aziel</p>
@@ -253,7 +253,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
           </>
         ) : (
           <>
-            <div className="bg-zinc-900 dark:bg-zinc-100 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
+            <div className="bg-zinc-900 dark:bg-zinc-100 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2 border-l-4 border-l-zinc-100 dark:border-l-zinc-900">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-400 dark:text-zinc-600 text-sm font-medium">Ganho Total de {filtroPessoa}</p>
@@ -266,7 +266,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-zinc-500 dark:text-zinc-500 text-sm">Neste período selecionado</p>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm lg:col-span-2 border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Custo para Empresa</p>

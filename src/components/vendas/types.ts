@@ -18,6 +18,10 @@ export type VendaEvento = {
   nome: string;
   data: string;
   quemPagouFreelancers: 'Diogo' | 'Aziel';
+  totalVendidoSite: number;
+  comissaoPercentual: number;
+  valorLiquido: number; // Readonly from DB
+  dividirLucros?: boolean;
   vendas: VendaFotografo[];
   despesas?: Despesa[];
 };

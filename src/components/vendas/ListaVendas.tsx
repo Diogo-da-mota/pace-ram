@@ -71,38 +71,47 @@ export const ListaVendas = ({ eventos, onNovoEvento, onEditar, onDetalhes, onRel
                           </button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
+                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
                           <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Total Vendido</p>
-                          <p className="text-xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                          <p className="text-lg md:text-2xl xl:text-xl 2xl:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                             R$ {formatarMoeda(resumo.totalBruto)}
                           </p>
                         </div>
+
+                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
+                          <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Valor Líquido</p>
+                          <p className="text-lg md:text-2xl xl:text-xl 2xl:text-2xl font-bold text-green-600 dark:text-green-400">
+                            R$ {formatarMoeda(resumo.totalLiquido)}
+                          </p>
+                        </div>
                         
-                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
                           <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Freelancers</p>
-                          <p className="text-xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                          <p className="text-lg md:text-2xl xl:text-xl 2xl:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                             - R$ {formatarMoeda(resumo.totalFreelancers)}
                           </p>
                         </div>
                         
-                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
                           <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Cada Sócio</p>
-                          <p className="text-xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                          <p className="text-lg md:text-2xl xl:text-xl 2xl:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                             R$ {formatarMoeda(resumo.parteIdealCadaSocio)}
                           </p>
                         </div>
                         
-                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm">
-                          <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Transferência</p>
+                        <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
+                          <div className="flex justify-between items-center w-full">
+                            <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Transferência</p>
+                            {resumo.transferencia > 0 && (
+                              <span className="text-xs opacity-80 font-normal text-zinc-500">{resumo.quemTransfere} → {resumo.quemRecebe}</span>
+                            )}
+                          </div>
                           <div className="font-bold text-zinc-900 dark:text-zinc-100">
                             {resumo.transferencia > 0 ? (
-                              <div className="flex flex-col">
-                                <span className="text-xs opacity-80 mb-1 font-normal text-zinc-500">{resumo.quemTransfere} → {resumo.quemRecebe}</span>
-                                <span className="text-xl md:text-3xl">R$ {formatarMoeda(resumo.transferencia)}</span>
-                              </div>
+                              <span className="text-lg md:text-2xl xl:text-xl 2xl:text-2xl">R$ {formatarMoeda(resumo.transferencia)}</span>
                             ) : (
-                              <span className="text-lg md:text-2xl opacity-50">Não necessária</span>
+                              <span className="text-lg md:text-2xl xl:text-xl 2xl:text-2xl opacity-50">Não necessária</span>
                             )}
                           </div>
                         </div>

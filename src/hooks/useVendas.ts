@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { VendaEvento } from '../components/vendas/types';
+import { toast } from 'sonner';
 
 export const useVendas = () => {
   const [eventos, setEventos] = useState<VendaEvento[]>([]);
@@ -11,10 +12,11 @@ export const useVendas = () => {
     try {
       setLoading(true);
       
-      // Buscar eventos
+      // Buscar eventos (apenas não deletados)
       const { data: eventosData, error: eventosError } = await supabase
         .from('venda_eventos')
         .select('*')
+        .is('deleted_at', null)
         .order('data', { ascending: false });
 
       if (eventosError) throw eventosError;
@@ -61,6 +63,10 @@ export const useVendas = () => {
           nome: evento.nome,
           data: evento.data,
           quemPagouFreelancers: evento.quem_pagou_freelancers as 'Diogo' | 'Aziel',
+          totalVendidoSite: Number(evento.total_vendido_site || 0),
+          comissaoPercentual: Number(evento.comissao_percentual || 10),
+          valorLiquido: Number(evento.valor_liquido || 0),
+          dividirLucros: evento.dividir_lucros,
           vendas: vendasDoEvento,
           despesas: despesasDoEvento
         };
@@ -85,35 +91,93 @@ export const useVendas = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
+      // Validar dados
+      if (evento.totalVendidoSite < 0) throw new Error('Total vendido não pode ser negativo');
+
       // 1. Salvar ou Atualizar Evento Pai
       if ('id' in evento && evento.id) {
         // Atualizar
+        // Tentar atualizar com o novo campo
         const { error: updateError } = await supabase
           .from('venda_eventos')
           .update({
             nome: evento.nome,
             data: evento.data,
-            quem_pagou_freelancers: evento.quemPagouFreelancers
+            quem_pagou_freelancers: evento.quemPagouFreelancers,
+            total_vendido_site: evento.totalVendidoSite,
+            comissao_percentual: evento.comissaoPercentual,
+            dividir_lucros: evento.dividirLucros
+            // valor_liquido é gerado automaticamente pelo banco
           })
           .eq('id', evento.id);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          // Fallback: Se der erro de coluna não encontrada (PGRST204), tenta salvar sem o campo novo
+          if (updateError.code === 'PGRST204' && updateError.message.includes('dividir_lucros')) {
+            console.warn('Coluna dividir_lucros não encontrada. Salvando sem ela.');
+            const { error: fallbackError } = await supabase
+              .from('venda_eventos')
+              .update({
+                nome: evento.nome,
+                data: evento.data,
+                quem_pagou_freelancers: evento.quemPagouFreelancers,
+                total_vendido_site: evento.totalVendidoSite,
+                comissao_percentual: evento.comissaoPercentual
+              })
+              .eq('id', evento.id);
+            
+            if (fallbackError) throw fallbackError;
+            
+            toast.warning('Evento salvo, mas a configuração de "Dividir Lucros" não pôde ser persistida. Execute a migração do banco de dados.');
+          } else {
+            throw updateError;
+          }
+        }
         eventoId = evento.id;
       } else {
         // Criar
+        // Tentar criar com o novo campo
         const { data: novoEvento, error: createError } = await supabase
           .from('venda_eventos')
           .insert({
             nome: evento.nome,
             data: evento.data,
             quem_pagou_freelancers: evento.quemPagouFreelancers,
+            total_vendido_site: evento.totalVendidoSite,
+            comissao_percentual: evento.comissaoPercentual,
+            dividir_lucros: evento.dividirLucros,
             criado_por: user.id
           })
           .select()
           .single();
 
-        if (createError) throw createError;
-        eventoId = novoEvento.id;
+        if (createError) {
+           // Fallback para criação
+           if (createError.code === 'PGRST204' && createError.message.includes('dividir_lucros')) {
+            console.warn('Coluna dividir_lucros não encontrada. Criando sem ela.');
+            const { data: novoEventoFallback, error: fallbackError } = await supabase
+              .from('venda_eventos')
+              .insert({
+                nome: evento.nome,
+                data: evento.data,
+                quem_pagou_freelancers: evento.quemPagouFreelancers,
+                total_vendido_site: evento.totalVendidoSite,
+                comissao_percentual: evento.comissaoPercentual,
+                criado_por: user.id
+              })
+              .select()
+              .single();
+            
+            if (fallbackError) throw fallbackError;
+            
+            toast.warning('Evento criado, mas a configuração de "Dividir Lucros" não pôde ser persistida. Execute a migração do banco de dados.');
+            eventoId = novoEventoFallback.id;
+          } else {
+            throw createError;
+          }
+        } else {
+          eventoId = novoEvento.id;
+        }
       }
 
       // 2. Lidar com Itens (Vendas)
@@ -172,14 +236,16 @@ export const useVendas = () => {
   const excluirEvento = async (id: number) => {
     try {
       setLoading(true);
+      // Soft Delete: Atualiza deleted_at em vez de remover
       const { error } = await supabase
         .from('venda_eventos')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
       await fetchEventos();
     } catch (err: any) {
+      console.error('Erro ao excluir evento:', err);
       setError(err.message);
     } finally {
       setLoading(false);

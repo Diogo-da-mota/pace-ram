@@ -1,20 +1,41 @@
-import { useState } from 'react';
-import { Trash2, Plus, DollarSign } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trash2, Plus, DollarSign, TrendingUp, Calculator } from 'lucide-react';
+import { toast } from 'sonner';
 import { VendaEvento, VendaFotografo, Despesa } from './types';
 import { CurrencyInput } from './CurrencyInput';
+import { formatarMoeda } from './utils';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
-export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento?: VendaEvento | null; onSalvar: (dados: VendaEvento) => void; onCancelar: () => void }) => {
+export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento?: VendaEvento | null; onSalvar: (dados: VendaEvento | Omit<VendaEvento, 'id'>) => void; onCancelar: () => void }) => {
   const [formData, setFormData] = useState<VendaEvento>(evento || {
     id: Date.now(),
     nome: '',
     data: '',
     quemPagouFreelancers: 'Diogo',
+    totalVendidoSite: 0,
+    comissaoPercentual: 10,
+    valorLiquido: 0,
+    dividirLucros: true,
     vendas: [
       { nome: 'Diogo', tipo: 'socio', valorVendido: 0, contaBancaria: 0 },
       { nome: 'Aziel', tipo: 'socio', valorVendido: 0, contaBancaria: 0 }
     ],
     despesas: []
   });
+
+  // Garantir valores padrão se vierem undefined do banco (para registros antigos)
+  useEffect(() => {
+    if (evento) {
+      setFormData(prev => ({
+        ...prev,
+        totalVendidoSite: prev.totalVendidoSite ?? 0,
+        comissaoPercentual: prev.comissaoPercentual ?? 10,
+        valorLiquido: prev.valorLiquido ?? 0,
+        dividirLucros: prev.dividirLucros ?? true
+      }));
+    }
+  }, [evento]);
 
   const adicionarFreelancer = () => {
     setFormData({
@@ -33,6 +54,17 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
     const isNumero = campo === 'valorVendido' || campo === 'valorPago' || campo === 'contaBancaria' || campo === 'valorLiquido';
     novasVendas[index] = { ...novasVendas[index], [campo]: isNumero ? Number(valor) : valor };
     setFormData({ ...formData, vendas: novasVendas });
+  };
+
+  const atualizarFinanceiro = (campo: 'totalVendidoSite' | 'comissaoPercentual', valor: number) => {
+    const novosDados = { ...formData, [campo]: valor };
+    
+    // Recalcular líquido
+    const total = campo === 'totalVendidoSite' ? valor : formData.totalVendidoSite;
+    const comissao = campo === 'comissaoPercentual' ? valor : formData.comissaoPercentual;
+    const liquido = total - (total * (comissao / 100));
+    
+    setFormData({ ...novosDados, valorLiquido: liquido });
   };
 
   const adicionarDespesa = () => {
@@ -54,13 +86,59 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
     setFormData({ ...formData, despesas: novasDespesas });
   };
 
+  const handleSalvarClick = () => {
+    // Validação
+    if (formData.totalVendidoSite <= 0) {
+      toast.error('O Total Vendido deve ser maior que zero.');
+      return;
+    }
+
+    // Preparar dados para envio
+    const dadosParaSalvar: VendaEvento | Omit<VendaEvento, 'id'> = { ...formData };
+    
+    // Se não tiver evento original (modo criação), remover o ID temporário
+    if (!evento) {
+      // @ts-ignore - Removendo ID temporário para forçar criação
+      delete (dadosParaSalvar as any).id;
+    }
+
+    // Verificar se houve alterações financeiras
+    const houveAlteracaoFinanceira = evento && (
+      formData.totalVendidoSite !== evento.totalVendidoSite ||
+      formData.comissaoPercentual !== evento.comissaoPercentual
+    );
+
+    if (houveAlteracaoFinanceira) {
+      // Usando confirm nativo para simplificar, mas poderia ser um modal customizado
+      if (window.confirm('Você alterou dados financeiros importantes. Deseja confirmar essas alterações?')) {
+        onSalvar(dadosParaSalvar);
+      }
+    } else {
+      onSalvar(dadosParaSalvar);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-8 max-w-5xl mx-auto border border-zinc-200 dark:border-zinc-800">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-zinc-900 dark:text-zinc-100">
-        {evento ? 'Editar Evento' : 'Novo Evento'}
-      </h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+          {evento ? 'Editar Evento' : 'Novo Evento'}
+        </h2>
+        
+        <div className="flex items-center space-x-3 bg-zinc-50 dark:bg-zinc-800 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700">
+            <Label htmlFor="dividir-lucros" className="cursor-pointer font-medium text-sm text-zinc-600 dark:text-zinc-400">
+                {formData.dividirLucros !== false ? 'Dividindo Lucros' : 'Lucros Individuais'}
+            </Label>
+            <Switch
+                id="dividir-lucros"
+                checked={formData.dividirLucros !== false}
+                onCheckedChange={(checked) => setFormData({ ...formData, dividirLucros: checked })}
+            />
+        </div>
+      </div>
 
       <div className="space-y-6 md:space-y-8">
+        {/* Cabeçalho */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
             <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">Nome do Evento</label>
@@ -83,6 +161,57 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           </div>
         </div>
 
+        {/* Seção Financeira do Site */}
+        <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 md:p-6">
+          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+            <TrendingUp className="w-6 h-6" /> Dados de Vendas do Site
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
+                Total Vendido (Site)
+              </label>
+              <CurrencyInput
+                value={formData.totalVendidoSite}
+                onChange={(v) => atualizarFinanceiro('totalVendidoSite', v)}
+                className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
+                Comissão (%)
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.comissaoPercentual}
+                  onChange={(e) => atualizarFinanceiro('comissaoPercentual', Number(e.target.value))}
+                  onFocus={(e) => e.target.select()}
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 outline-none pr-8"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 font-semibold">%</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
+                Valor Líquido
+              </label>
+              <div className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-bold flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-zinc-500" />
+                R$ {formatarMoeda(formData.valorLiquido)}
+              </div>
+              <p className="text-xs text-zinc-500 mt-1">Calculado automaticamente</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quem Pagou */}
         <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 md:p-6">
           <label className="block text-sm font-semibold mb-3 text-zinc-900 dark:text-zinc-100">
             Quem pagou os freelancers?
@@ -111,13 +240,11 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
               Aziel
             </button>
           </div>
-          <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-            Selecione quem adiantou o pagamento dos freelancers. O sistema vai calcular o acerto entre os sócios.
-          </p>
         </div>
 
+        {/* Vendas */}
         <div>
-          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">Vendas por Fotógrafo</h3>
+          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">Vendas por Fotógrafo (Manual)</h3>
           <div className="space-y-4">
             {formData.vendas.map((venda, index) => (
               <div key={index} className="p-3 md:p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
@@ -183,6 +310,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           </button>
         </div>
 
+        {/* Despesas */}
         <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 md:p-6">
           <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
             <DollarSign className="w-6 h-6" /> Despesas do Evento
@@ -254,7 +382,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
             Cancelar
           </button>
           <button
-            onClick={() => onSalvar(formData)}
+            onClick={() => handleSalvarClick()}
             className="w-full sm:w-auto px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-semibold transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             Salvar Evento
