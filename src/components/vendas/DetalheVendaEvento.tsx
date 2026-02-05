@@ -7,61 +7,61 @@ export const DetalheVendaEvento = ({ evento }: { evento: VendaEvento }) => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
-        <h2 className="text-3xl font-bold mb-2">{evento.nome}</h2>
+      <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-4 md:p-8 text-white">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">{evento.nome}</h2>
         <p className="text-blue-100">{new Date(evento.data).toLocaleDateString('pt-BR')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
               <DollarSign className="text-green-600 dark:text-green-400" size={24} />
             </div>
             <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Total Bruto</span>
           </div>
-          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             R$ {formatarMoeda(resumo.totalBruto)}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
               <Calculator className="text-blue-600 dark:text-blue-400" size={24} />
             </div>
             <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Total Líquido</span>
           </div>
-          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             R$ {formatarMoeda(resumo.totalLiquido)}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
               <Users className="text-red-600 dark:text-red-400" size={24} />
             </div>
             <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Freelancers</span>
           </div>
-          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             R$ {formatarMoeda(resumo.totalFreelancers)}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
               <TrendingUp className="text-purple-600 dark:text-purple-400" size={24} />
             </div>
             <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Cada Sócio</span>
           </div>
-          <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             R$ {formatarMoeda(resumo.parteIdealCadaSocio)}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 border-l-4 border-l-yellow-500">
+        <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 border-l-4 border-l-yellow-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
               <DollarSign className="text-yellow-600 dark:text-yellow-400" size={24} />
@@ -73,12 +73,12 @@ export const DetalheVendaEvento = ({ evento }: { evento: VendaEvento }) => {
               <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                 {resumo.quemTransfere} paga {resumo.quemRecebe}
               </p>
-              <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
+              <p className="text-lg md:text-xl font-bold text-yellow-600 dark:text-yellow-400">
                 R$ {formatarMoeda(resumo.transferencia)}
               </p>
             </div>
           ) : (
-            <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-2">
+            <p className="text-lg md:text-xl font-bold text-green-600 dark:text-green-400 mt-2">
               Contas Zeradas ✅
             </p>
           )}
@@ -86,11 +86,11 @@ export const DetalheVendaEvento = ({ evento }: { evento: VendaEvento }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+        <div className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <h3 className="text-lg md:text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2">
             📊 Detalhamento Diogo
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3 text-sm md:text-base">
             <div className="flex justify-between">
               <span className="text-zinc-600 dark:text-zinc-400">Vendeu na Maquininha:</span>
               <span className="font-semibold text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(resumo.contaDiogo)}</span>
@@ -112,11 +112,11 @@ export const DetalheVendaEvento = ({ evento }: { evento: VendaEvento }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+        <div className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <h3 className="text-lg md:text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2">
             📊 Detalhamento Aziel
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3 text-sm md:text-base">
             <div className="flex justify-between">
               <span className="text-zinc-600 dark:text-zinc-400">Vendeu na Maquininha:</span>
               <span className="font-semibold text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(resumo.contaAziel)}</span>

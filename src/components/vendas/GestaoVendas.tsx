@@ -45,12 +45,12 @@ export const GestaoVendas = () => {
   }, [vendaEventos]);
 
   return (
-    <div className="bg-zinc-50 dark:bg-black rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+    <div className="bg-zinc-50 dark:bg-black rounded-2xl border border-zinc-200 dark:border-zinc-800 p-3 md:p-6">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
           Gestão de Corridas
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400">
           Controle completo de vendas e pagamentos dos eventos
         </p>
       </div>
@@ -58,7 +58,7 @@ export const GestaoVendas = () => {
       <div className="flex flex-col sm:flex-row gap-2 mb-6">
         <button
           onClick={() => setVendaAbaSelecionada('lista')}
-          className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+          className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition-all ${
             vendaAbaSelecionada === 'lista'
               ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-black'
               : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -68,10 +68,10 @@ export const GestaoVendas = () => {
         </button>
         <button
           onClick={() => {
-            setVendaAbaSelecionada('novo');
             setVendaEventoAtual(null);
+            setVendaAbaSelecionada('novo');
           }}
-          className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+          className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
             vendaAbaSelecionada === 'novo'
               ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-black'
               : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -81,7 +81,7 @@ export const GestaoVendas = () => {
         </button>
         <button
           onClick={() => setVendaAbaSelecionada('relatorios')}
-          className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+          className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
             vendaAbaSelecionada === 'relatorios'
               ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-black'
               : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -111,21 +111,21 @@ export const GestaoVendas = () => {
                     const dataObj = new Date(ano, mes - 1, dia);
                     
                     return (
-                      <div key={evento.id} className="bg-white dark:bg-zinc-900 rounded-xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
-                          <div className="flex items-baseline gap-4">
-                            <span className="text-zinc-400 dark:text-zinc-500 text-xl font-medium bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-lg">
+                      <div key={evento.id} className="bg-white dark:bg-zinc-900 rounded-xl p-4 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 gap-4">
+                          <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4">
+                            <span className="text-zinc-400 dark:text-zinc-500 text-xs md:text-xl font-medium bg-zinc-100 dark:bg-zinc-800 px-2 py-1 md:px-3 rounded-lg w-fit">
                               {dataObj.toLocaleDateString('pt-BR')}
                             </span>
-                            <h3 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">{evento.nome}</h3>
+                            <h3 className="text-lg md:text-3xl font-bold text-zinc-900 dark:text-zinc-100">{evento.nome}</h3>
                           </div>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2 w-full md:w-auto">
                             <button
                               onClick={() => {
                                 setVendaEventoAtual(evento);
                                 setVendaAbaSelecionada('detalhes');
                               }}
-                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                              className="flex-1 md:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-center"
                             >
                               Ver Detalhes
                             </button>
@@ -140,38 +140,38 @@ export const GestaoVendas = () => {
                             </button>
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                          <div className="flex flex-col gap-2 p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                          <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
                             <p className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs">Total Vendido</p>
-                            <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                            <p className="text-xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100">
                               R$ {formatarMoeda(resumo.totalBruto)}
                             </p>
                           </div>
                           
-                          <div className="flex flex-col gap-2 p-5 rounded-2xl bg-red-50/50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/20">
+                          <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-red-50/50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/20">
                             <p className="text-red-600/70 dark:text-red-400/70 font-semibold uppercase tracking-wider text-xs">Freelancers</p>
-                            <p className="text-3xl font-bold text-red-600 dark:text-red-400">
+                            <p className="text-xl md:text-3xl font-bold text-red-600 dark:text-red-400">
                               - R$ {formatarMoeda(resumo.totalFreelancers)}
                             </p>
                           </div>
                           
-                          <div className="flex flex-col gap-2 p-5 rounded-2xl bg-green-50/50 dark:bg-green-950/10 border border-green-100 dark:border-green-900/20">
+                          <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-green-50/50 dark:bg-green-950/10 border border-green-100 dark:border-green-900/20">
                             <p className="text-green-600/70 dark:text-green-400/70 font-semibold uppercase tracking-wider text-xs">Cada Sócio</p>
-                            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                            <p className="text-xl md:text-3xl font-bold text-green-600 dark:text-green-400">
                               R$ {formatarMoeda(resumo.parteIdealCadaSocio)}
                             </p>
                           </div>
                           
-                          <div className="flex flex-col gap-2 p-5 rounded-2xl bg-yellow-50/50 dark:bg-yellow-950/10 border border-yellow-100 dark:border-yellow-900/20">
+                          <div className="flex flex-col gap-2 p-3 md:p-5 rounded-2xl bg-yellow-50/50 dark:bg-yellow-950/10 border border-yellow-100 dark:border-yellow-900/20">
                             <p className="text-yellow-600/70 dark:text-yellow-400/70 font-semibold uppercase tracking-wider text-xs">Transferência</p>
                             <div className="font-bold text-yellow-600 dark:text-yellow-400">
                               {resumo.transferencia > 0 ? (
                                 <div className="flex flex-col">
                                   <span className="text-xs opacity-80 mb-1 font-normal">{resumo.quemTransfere} → {resumo.quemRecebe}</span>
-                                  <span className="text-3xl">R$ {formatarMoeda(resumo.transferencia)}</span>
+                                  <span className="text-xl md:text-3xl">R$ {formatarMoeda(resumo.transferencia)}</span>
                                 </div>
                               ) : (
-                                <span className="text-2xl opacity-50">Não necessária</span>
+                                <span className="text-lg md:text-2xl opacity-50">Não necessária</span>
                               )}
                             </div>
                           </div>

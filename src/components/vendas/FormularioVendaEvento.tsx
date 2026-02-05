@@ -54,13 +54,13 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-8 max-w-5xl mx-auto border border-zinc-200 dark:border-zinc-800">
-      <h2 className="text-3xl font-bold mb-8 text-zinc-900 dark:text-zinc-100">
+    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-8 max-w-5xl mx-auto border border-zinc-200 dark:border-zinc-800">
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-zinc-900 dark:text-zinc-100">
         {evento ? 'Editar Evento' : 'Novo Evento'}
       </h2>
 
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-6 md:space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
             <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">Nome do Evento</label>
             <input
@@ -82,7 +82,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           </div>
         </div>
 
-        <div className="bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6">
+        <div className="bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 md:p-6">
           <label className="block text-sm font-semibold mb-3 text-blue-900 dark:text-blue-100">
             💰 Quem pagou os freelancers?
           </label>
@@ -119,7 +119,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">Vendas por Fotógrafo</h3>
           <div className="space-y-4">
             {formData.vendas.map((venda, index) => (
-              <div key={`${venda.nome}-${index}`} className="p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
+              <div key={`${venda.nome}-${index}`} className="p-3 md:p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">
@@ -169,7 +169,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
                       <div className="flex items-end">
                         <button
                           onClick={() => removerFreelancer(index)}
-                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                          className="w-full md:w-auto px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center justify-center"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -182,13 +182,13 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           </div>
           <button
             onClick={adicionarFreelancer}
-            className="mt-4 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-colors flex items-center gap-2"
+            className="mt-4 w-full sm:w-auto px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
           >
             <Plus size={20} /> Adicionar Freelancer
           </button>
         </div>
 
-        <div className="bg-orange-50 dark:bg-orange-950/20 border-2 border-orange-200 dark:border-orange-900/40 rounded-xl p-6">
+        <div className="bg-orange-50 dark:bg-orange-950/20 border-2 border-orange-200 dark:border-orange-900/40 rounded-xl p-4 md:p-6">
           <h3 className="text-xl font-bold mb-4 text-orange-900 dark:text-orange-100 flex items-center gap-2">
             <DollarSign className="w-6 h-6" /> Despesas do Evento
           </h3>
@@ -247,22 +247,22 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
 
           <button
             onClick={adicionarDespesa}
-            className="mt-4 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors flex items-center gap-2 text-sm"
+            className="mt-4 w-full sm:w-auto px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm"
           >
             <Plus size={16} /> Adicionar Despesa
           </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-end pt-4 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col-reverse sm:flex-row gap-4 justify-end pt-4 border-t border-zinc-200 dark:border-zinc-800">
           <button
             onClick={onCancelar}
-            className="px-6 py-3 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-xl font-semibold transition-colors"
+            className="w-full sm:w-auto px-6 py-3 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-xl font-semibold transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={() => onSalvar(formData)}
-            className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors"
+            className="w-full sm:w-auto px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors"
           >
             Salvar Evento
           </button>

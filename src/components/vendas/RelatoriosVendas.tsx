@@ -112,7 +112,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Filtros */}
-      <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+      <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-center gap-2 mb-4 text-zinc-900 dark:text-zinc-100 font-semibold">
           <Filter className="w-5 h-5" />
           <h2>Filtros de Análise</h2>
@@ -173,14 +173,14 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {filtroPessoa === 'todos' ? (
           <>
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-3 md:p-6 text-white shadow-lg">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-blue-100 text-sm font-medium">Faturamento Total</p>
-                  <h3 className="text-3xl font-bold mt-1">R$ {formatarMoeda(totais.faturamentoTotal)}</h3>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1">R$ {formatarMoeda(totais.faturamentoTotal)}</h3>
                 </div>
                 <div className="p-2 bg-white/20 rounded-lg">
                   <TrendingUp className="w-6 h-6 text-white" />
@@ -189,11 +189,11 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-blue-100 text-xs">Soma de todas as vendas brutas</p>
             </div>
 
-            <div className="bg-zinc-900 dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <div className="bg-zinc-900 dark:bg-zinc-800 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-400 text-sm font-medium">Lucro Líquido</p>
-                  <h3 className="text-3xl font-bold mt-1 text-white dark:text-zinc-100">R$ {formatarMoeda(totais.lucroLiquidoTotal)}</h3>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-white dark:text-zinc-100">R$ {formatarMoeda(totais.lucroLiquidoTotal)}</h3>
                 </div>
                 <div className="p-2 bg-zinc-800 dark:bg-zinc-700 rounded-lg">
                   <DollarSign className="w-6 h-6 text-green-500" />
@@ -202,11 +202,11 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-zinc-500 text-xs">Após taxas, freelancers e despesas</p>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Ganho Diogo</p>
-                  <h3 className="text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.ganhoDiogo)}</h3>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.ganhoDiogo)}</h3>
                 </div>
                 <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
                   <Users className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
@@ -214,11 +214,11 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-500 text-sm font-medium">Ganho Aziel</p>
-                  <h3 className="text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.ganhoAziel)}</h3>
+                  <h3 className="text-xl md:text-3xl font-bold mt-1 text-zinc-900 dark:text-zinc-100">R$ {formatarMoeda(totais.ganhoAziel)}</h3>
                 </div>
                 <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
                   <Users className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
@@ -226,24 +226,24 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               </div>
             </div>
 
-            <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl p-6 border border-red-100 dark:border-red-900/30 shadow-sm">
+            <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl p-3 md:p-6 border border-red-100 dark:border-red-900/30 shadow-sm">
               <p className="text-red-600/70 dark:text-red-400/70 text-sm font-medium uppercase">Gasto com Freelancers</p>
-              <h3 className="text-2xl font-bold mt-1 text-red-600 dark:text-red-400">R$ {formatarMoeda(totais.gastoFreelancers)}</h3>
+              <h3 className="text-lg md:text-2xl font-bold mt-1 text-red-600 dark:text-red-400">R$ {formatarMoeda(totais.gastoFreelancers)}</h3>
             </div>
 
-            <div className="bg-orange-50 dark:bg-orange-950/20 rounded-2xl p-6 border border-orange-100 dark:border-orange-900/30 shadow-sm">
+            <div className="bg-orange-50 dark:bg-orange-950/20 rounded-2xl p-3 md:p-6 border border-orange-100 dark:border-orange-900/30 shadow-sm">
               <p className="text-orange-600/70 dark:text-orange-400/70 text-sm font-medium uppercase">Despesas Extras</p>
-              <h3 className="text-2xl font-bold mt-1 text-orange-600 dark:text-orange-400">R$ {formatarMoeda(totais.despesasTotal)}</h3>
+              <h3 className="text-lg md:text-2xl font-bold mt-1 text-orange-600 dark:text-orange-400">R$ {formatarMoeda(totais.despesasTotal)}</h3>
               <p className="text-orange-600/50 text-xs mt-1">Viagem, Lanche, Gasolina</p>
             </div>
           </>
         ) : (
           <>
-            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg md:col-span-2">
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-3 md:p-6 text-white shadow-lg md:col-span-2">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-green-100 text-sm font-medium">Ganho Total de {filtroPessoa}</p>
-                  <h3 className="text-4xl font-bold mt-1">R$ {formatarMoeda(totais.ganhosPessoaSelecionada)}</h3>
+                  <h3 className="text-2xl md:text-4xl font-bold mt-1">R$ {formatarMoeda(totais.ganhosPessoaSelecionada)}</h3>
                 </div>
                 <div className="p-2 bg-white/20 rounded-lg">
                   <DollarSign className="w-8 h-8 text-white" />
@@ -252,11 +252,11 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
               <p className="text-green-100 text-sm">Neste período selecionado</p>
             </div>
 
-            <div className="bg-zinc-900 dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm md:col-span-2">
+            <div className="bg-zinc-900 dark:bg-zinc-800 rounded-2xl p-3 md:p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm md:col-span-2">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <p className="text-zinc-400 text-sm font-medium">Custo para Empresa</p>
-                  <h3 className="text-4xl font-bold mt-1 text-white dark:text-zinc-100">R$ {formatarMoeda(totais.custoPessoaSelecionada)}</h3>
+                  <h3 className="text-2xl md:text-4xl font-bold mt-1 text-white dark:text-zinc-100">R$ {formatarMoeda(totais.custoPessoaSelecionada)}</h3>
                 </div>
                 <div className="p-2 bg-zinc-800 dark:bg-zinc-700 rounded-lg">
                   <TrendingUp className="w-8 h-8 text-red-500" />
@@ -270,7 +270,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
 
       {/* Lista Detalhada */}
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="p-3 md:p-6 border-b border-zinc-200 dark:border-zinc-800">
           <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
             {filtroPessoa === 'todos' ? 'Histórico Geral de Eventos' : `Histórico de ${filtroPessoa}`}
           </h3>
@@ -279,16 +279,16 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
           <table className="w-full text-sm text-left">
             <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 uppercase text-xs">
               <tr>
-                <th className="px-6 py-4 font-medium">Data</th>
-                <th className="px-6 py-4 font-medium">Evento</th>
+                <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Data</th>
+                <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Evento</th>
                 {filtroPessoa === 'todos' ? (
                   <>
-                    <th className="px-6 py-4 font-medium">Faturamento</th>
-                    <th className="px-6 py-4 font-medium">Lucro Líquido</th>
-                    <th className="px-6 py-4 font-medium">Despesas</th>
+                    <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Faturamento</th>
+                    <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Lucro Líquido</th>
+                    <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Despesas</th>
                   </>
                 ) : (
-                  <th className="px-6 py-4 font-medium">Valor Recebido</th>
+                  <th className="px-3 py-2 md:px-6 md:py-4 font-medium whitespace-nowrap">Valor Recebido</th>
                 )}
               </tr>
             </thead>
@@ -313,26 +313,26 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
 
                 return (
                   <tr key={evento.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                    <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
+                    <td className="px-3 py-2 md:px-6 md:py-4 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                       {new Date(evento.data).toLocaleDateString('pt-BR')}
                     </td>
-                    <td className="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100">
+                    <td className="px-3 py-2 md:px-6 md:py-4 font-medium text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
                       {evento.nome}
                     </td>
                     {filtroPessoa === 'todos' ? (
                       <>
-                        <td className="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100">
+                        <td className="px-3 py-2 md:px-6 md:py-4 font-medium text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
                           R$ {formatarMoeda(totalEvento)}
                         </td>
-                        <td className="px-6 py-4 text-green-600 dark:text-green-400 font-bold">
+                        <td className="px-3 py-2 md:px-6 md:py-4 text-green-600 dark:text-green-400 font-bold whitespace-nowrap">
                           R$ {formatarMoeda(lucroLiquido)}
                         </td>
-                        <td className="px-6 py-4 text-orange-600 dark:text-orange-400">
+                        <td className="px-3 py-2 md:px-6 md:py-4 text-orange-600 dark:text-orange-400 whitespace-nowrap">
                           R$ {formatarMoeda(totalDespesas)}
                         </td>
                       </>
                     ) : (
-                      <td className="px-6 py-4 font-bold text-green-600 dark:text-green-400">
+                      <td className="px-3 py-2 md:px-6 md:py-4 font-bold text-green-600 dark:text-green-400 whitespace-nowrap">
                         R$ {formatarMoeda(valorPessoa)}
                       </td>
                     )}
