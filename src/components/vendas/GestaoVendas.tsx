@@ -1,11 +1,12 @@
-import { useState } from 'react';
 import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { Plus, BarChart3 } from 'lucide-react';
+import { Plus, BarChart3, Loader2 } from 'lucide-react';
 import { VendaEvento } from './types';
 import { FormularioVendaEvento } from './FormularioVendaEvento';
 import { DetalheVendaEvento } from './DetalheVendaEvento';
 import { RelatoriosVendas } from './RelatoriosVendas';
 import { ListaVendas } from './ListaVendas';
+import { useVendas } from '../../hooks/useVendas';
+import { toast } from 'sonner';
 
 // Wrapper para edição que lida com o parâmetro ID
 const EditarVendaWrapper = ({ eventos, onSalvar, onCancelar }: { eventos: VendaEvento[], onSalvar: (evento: VendaEvento) => void, onCancelar: () => void }) => {
@@ -30,43 +31,30 @@ const DetalhesVendaWrapper = ({ eventos }: { eventos: VendaEvento[] }) => {
 export const GestaoVendas = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { eventos: vendaEventos, loading, salvarEvento, fetchEventos } = useVendas();
   
   // Determina qual aba está ativa baseado na URL
   const isLista = location.pathname.endsWith('dashboard-Venda-das-Corridas') || location.pathname.endsWith('dashboard-Venda-das-Corridas/');
   const isNovo = location.pathname.includes('/novo');
   const isRelatorios = location.pathname.includes('/relatorios');
 
-  const [vendaEventos, setVendaEventos] = useState<VendaEvento[]>([
-    {
-      id: 1,
-      nome: "Corrida de Rua",
-      data: "2026-02-01",
-      quemPagouFreelancers: "Diogo",
-      vendas: [
-        { nome: "Diogo", tipo: "socio", valorVendido: 2788.51, contaBancaria: 6546.59 },
-        { nome: "Aziel", tipo: "socio", valorVendido: 1784.25, contaBancaria: 1784.25 },
-        { nome: "Talytta", tipo: "freelancer", valorVendido: 2298.00, valorLiquido: 2122.00, valorPago: 250.00 },
-        { nome: "Franciele", tipo: "freelancer", valorVendido: 1699.00, valorLiquido: 1568.00, valorPago: 250.00 },
-        { nome: "Matheus", tipo: "freelancer", valorVendido: 306.67, valorPago: 300.00 },
-        { nome: "Vitor", tipo: "freelancer", valorVendido: 306.67, valorPago: 300.00 }
-      ],
-      despesas: []
+  const handleSalvar = async (dados: VendaEvento | Omit<VendaEvento, 'id'>) => {
+    const sucesso = await salvarEvento(dados);
+    if (sucesso) {
+      toast.success('Evento salvo com sucesso!');
+      navigate('/dashboard-Venda-das-Corridas');
+    } else {
+      toast.error('Erro ao salvar evento. Tente novamente.');
     }
-  ]);
-
-  const handleSalvarNovo = (dados: Omit<VendaEvento, 'id'>) => {
-    const novoEvento = { ...dados, id: Date.now() };
-    setVendaEventos([...vendaEventos, novoEvento]);
-    navigate('/dashboard-Venda-das-Corridas');
   };
 
-  const handleSalvarEdicao = (dados: VendaEvento) => {
-    const eventosAtualizados = vendaEventos.map(e =>
-      e.id === dados.id ? dados : e
+  if (loading && vendaEventos.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-zinc-500" />
+      </div>
     );
-    setVendaEventos(eventosAtualizados);
-    navigate('/dashboard-Venda-das-Corridas');
-  };
+  }
 
   return (
     <div className="bg-zinc-50 dark:bg-black rounded-2xl border border-zinc-200 dark:border-zinc-800 p-3 md:p-6">
@@ -124,14 +112,14 @@ export const GestaoVendas = () => {
         } />
         <Route path="novo" element={
           <FormularioVendaEvento
-            onSalvar={handleSalvarNovo}
+            onSalvar={handleSalvar}
             onCancelar={() => navigate('/dashboard-Venda-das-Corridas')}
           />
         } />
         <Route path="editar/:id" element={
           <EditarVendaWrapper 
             eventos={vendaEventos} 
-            onSalvar={handleSalvarEdicao}
+            onSalvar={handleSalvar}
             onCancelar={() => navigate('/dashboard-Venda-das-Corridas')}
           />
         } />

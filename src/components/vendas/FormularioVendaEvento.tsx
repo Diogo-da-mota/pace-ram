@@ -120,7 +120,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">Vendas por Fotógrafo</h3>
           <div className="space-y-4">
             {formData.vendas.map((venda, index) => (
-              <div key={`${venda.nome}-${index}`} className="p-3 md:p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
+              <div key={index} className="p-3 md:p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">
