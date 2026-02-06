@@ -14,7 +14,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center group">
           <img 
-            src="/logo.png" 
+            src="/logo-horizontal.png" 
             alt="PACE RAM Logo" 
             className="h-10 w-auto transition-all duration-300 group-hover:scale-105"
           />
