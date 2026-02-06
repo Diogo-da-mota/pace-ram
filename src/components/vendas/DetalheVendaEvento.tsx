@@ -12,7 +12,7 @@ export const DetalheVendaEvento = ({ evento }: { evento: VendaEvento }) => {
         <p className="text-zinc-400 dark:text-zinc-600">{new Date(evento.data).toLocaleDateString('pt-BR')}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
@@ -87,7 +87,7 @@ export const DetalheVendaEvento = ({ evento }: { evento: VendaEvento }) => {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 border-l-4 border-l-zinc-900 dark:border-l-zinc-100">
+        <div className={`bg-white dark:bg-zinc-900 p-3 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 border-l-4 border-l-zinc-900 dark:border-l-zinc-100 ${resumo.totalDespesas > 0 ? 'col-span-2 xl:col-span-1' : ''}`}>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
               <DollarSign className="text-zinc-900 dark:text-zinc-100" size={24} />

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Trash2, Plus, DollarSign, TrendingUp, Calculator } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Trash2, Plus, DollarSign, TrendingUp, Calculator, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { VendaEvento, VendaFotografo, Despesa } from './types';
 import { CurrencyInput } from './CurrencyInput';
@@ -7,7 +7,95 @@ import { formatarMoeda } from './utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
-export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento?: VendaEvento | null; onSalvar: (dados: VendaEvento | Omit<VendaEvento, 'id'>) => void; onCancelar: () => void }) => {
+const FreelancerSelector = ({
+  value,
+  onChange,
+  sugestoes,
+  disabled
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  sugestoes: string[];
+  disabled?: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Fechar ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Lógica de filtro inteligente
+  const sugestoesFiltradas = useMemo(() => {
+    if (!value) return sugestoes;
+    // Se o valor atual é exatamente uma das opções, mostra todas (para permitir troca fácil)
+    if (sugestoes.includes(value)) return sugestoes;
+    // Caso contrário, filtra pelo texto digitado
+    return sugestoes.filter(s => s.toLowerCase().includes(value.toLowerCase()));
+  }, [value, sugestoes]);
+
+  return (
+    <div className="relative" ref={wrapperRef}>
+      <div className="relative">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          disabled={disabled}
+          className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 disabled:opacity-50 text-sm pr-8 outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-all"
+          autoComplete="off"
+        />
+        {!disabled && (
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 p-1"
+            tabIndex={-1}
+          >
+            <ChevronDown size={16} />
+          </button>
+        )}
+      </div>
+      
+      {open && !disabled && sugestoesFiltradas.length > 0 && (
+        <ul className="absolute z-50 w-full mt-1 max-h-60 overflow-auto bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-1">
+          {sugestoesFiltradas.map((nome, idx) => (
+            <li
+              key={idx}
+              className="px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer text-sm text-zinc-900 dark:text-zinc-100"
+              onClick={() => {
+                onChange(nome);
+                setOpen(false);
+              }}
+            >
+              {nome}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+interface FormularioVendaEventoProps {
+  evento?: VendaEvento | null;
+  eventosPassados?: VendaEvento[];
+  onSalvar: (dados: VendaEvento | Omit<VendaEvento, 'id'>) => void;
+  onCancelar: () => void;
+}
+
+export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, onCancelar }: FormularioVendaEventoProps) => {
   const [formData, setFormData] = useState<VendaEvento>(evento || {
     id: Date.now(),
     nome: '',
@@ -86,6 +174,19 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
     setFormData({ ...formData, despesas: novasDespesas });
   };
 
+  // Extrair nomes de freelancers já cadastrados para sugestões
+  const sugestoesNomes = useMemo(() => {
+    const nomes = new Set<string>();
+    eventosPassados.forEach(evt => {
+      evt.vendas.forEach(venda => {
+        if (venda.nome && venda.nome !== 'Diogo' && venda.nome !== 'Aziel') {
+          nomes.add(venda.nome);
+        }
+      });
+    });
+    return Array.from(nomes).sort();
+  }, [eventosPassados]);
+
   const handleSalvarClick = () => {
     // Validação
     if (formData.totalVendidoSite <= 0) {
@@ -125,7 +226,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           {evento ? 'Editar Evento' : 'Novo Evento'}
         </h2>
         
-        <div className="flex items-center space-x-3 bg-zinc-50 dark:bg-zinc-800 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700">
+        <div className="hidden md:flex items-center space-x-4 bg-zinc-50 dark:bg-zinc-800 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700">
             <Label htmlFor="dividir-lucros" className="cursor-pointer font-medium text-sm text-zinc-600 dark:text-zinc-400">
                 {formData.dividirLucros !== false ? 'Dividindo Lucros' : 'Lucros Individuais'}
             </Label>
@@ -152,12 +253,21 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           </div>
           <div>
             <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">Data</label>
-            <input
-              type="date"
-              value={formData.data}
-              onChange={(e) => setFormData({ ...formData, data: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 outline-none"
-            />
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={formData.data}
+                onChange={(e) => setFormData({ ...formData, data: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 outline-none"
+              />
+              <div className="md:hidden flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 px-3 rounded-xl border border-zinc-200 dark:border-zinc-700">
+                <Switch
+                  aria-label="Dividir Lucros"
+                  checked={formData.dividirLucros !== false}
+                  onCheckedChange={(checked) => setFormData({ ...formData, dividirLucros: checked })}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -167,34 +277,36 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
             <TrendingUp className="w-6 h-6" /> Dados de Vendas do Site
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
-                Total Vendido (Site)
-              </label>
-              <CurrencyInput
-                value={formData.totalVendidoSite}
-                onChange={(v) => atualizarFinanceiro('totalVendidoSite', v)}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
-                Comissão (%)
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={formData.comissaoPercentual}
-                  onChange={(e) => atualizarFinanceiro('comissaoPercentual', Number(e.target.value))}
-                  onFocus={(e) => e.target.select()}
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 outline-none pr-8"
+          <div className="flex flex-col md:grid md:grid-cols-3 gap-6">
+            <div className="flex flex-row gap-4 md:contents">
+              <div className="flex-1 md:w-auto">
+                <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
+                  Total Vendido (Site)
+                </label>
+                <CurrencyInput
+                  value={formData.totalVendidoSite}
+                  onChange={(v) => atualizarFinanceiro('totalVendidoSite', v)}
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 font-semibold">%</span>
+              </div>
+
+              <div className="w-[30%] md:w-auto">
+                <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
+                  Comissão
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    value={formData.comissaoPercentual}
+                    onChange={(e) => atualizarFinanceiro('comissaoPercentual', Number(e.target.value))}
+                    onFocus={(e) => e.target.select()}
+                    className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 outline-none pr-8"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 font-semibold">%</span>
+                </div>
               </div>
             </div>
 
@@ -216,7 +328,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           <label className="block text-sm font-semibold mb-3 text-zinc-900 dark:text-zinc-100">
             Quem pagou os freelancers?
           </label>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-row gap-4">
             <button
               type="button"
               onClick={() => setFormData({ ...formData, quemPagouFreelancers: 'Diogo' })}
@@ -248,20 +360,19 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
           <div className="space-y-4">
             {formData.vendas.map((venda, index) => (
               <div key={index} className="p-3 md:p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
+                <div className="flex flex-row md:grid md:grid-cols-4 gap-2 md:gap-4 items-end">
+                  <div className="w-[30%] md:w-auto">
                     <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">
                       {venda.tipo === 'socio' ? 'Sócio' : 'Nome'}
                     </label>
-                    <input
-                      type="text"
+                    <FreelancerSelector
                       value={venda.nome}
-                      onChange={(e) => atualizarVenda(index, 'nome', e.target.value)}
+                      onChange={(valor) => atualizarVenda(index, 'nome', valor)}
+                      sugestoes={venda.tipo === 'freelancer' ? sugestoesNomes : []}
                       disabled={venda.tipo === 'socio'}
-                      className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 disabled:opacity-50 text-sm"
                     />
                   </div>
-                  <div>
+                  <div className="w-[30%] md:w-auto">
                     <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Valor Vendido</label>
                     <CurrencyInput
                       value={venda.valorVendido}
@@ -270,7 +381,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
                     />
                   </div>
                   {venda.tipo === 'socio' ? (
-                    <div className="md:col-span-2">
+                    <div className="flex-1 md:col-span-2">
                       <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Conta Bancária</label>
                       <CurrencyInput
                         value={venda.contaBancaria || 0}
@@ -280,7 +391,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
                     </div>
                   ) : (
                     <>
-                      <div>
+                      <div className="flex-1 md:w-auto">
                         <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Valor Pago</label>
                         <CurrencyInput
                           value={venda.valorPago || 0}
@@ -288,7 +399,7 @@ export const FormularioVendaEvento = ({ evento, onSalvar, onCancelar }: { evento
                           className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm"
                         />
                       </div>
-                      <div className="flex items-end">
+                      <div className="flex items-end w-auto">
                         <button
                           onClick={() => removerFreelancer(index)}
                           className="w-full md:w-auto px-4 py-2 bg-white border border-zinc-200 hover:border-red-200 hover:bg-red-50 text-zinc-400 hover:text-red-500 rounded-lg transition-colors flex items-center justify-center"

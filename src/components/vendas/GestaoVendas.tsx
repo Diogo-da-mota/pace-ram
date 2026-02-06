@@ -9,13 +9,13 @@ import { useVendas } from '../../hooks/useVendas';
 import { toast } from 'sonner';
 
 // Wrapper para edição que lida com o parâmetro ID
-const EditarVendaWrapper = ({ eventos, onSalvar, onCancelar }: { eventos: VendaEvento[], onSalvar: (evento: VendaEvento) => void, onCancelar: () => void }) => {
+const EditarVendaWrapper = ({ eventos, onSalvar, onCancelar }: { eventos: VendaEvento[], onSalvar: (evento: VendaEvento | Omit<VendaEvento, 'id'>) => void, onCancelar: () => void }) => {
   const { id } = useParams();
   const evento = eventos.find(e => e.id === Number(id));
   
   if (!evento) return <div className="p-6 text-center text-zinc-500">Evento não encontrado</div>;
   
-  return <FormularioVendaEvento evento={evento} onSalvar={onSalvar} onCancelar={onCancelar} />;
+  return <FormularioVendaEvento evento={evento} eventosPassados={eventos} onSalvar={onSalvar} onCancelar={onCancelar} />;
 };
 
 // Wrapper para detalhes que lida com o parâmetro ID
@@ -112,6 +112,7 @@ export const GestaoVendas = () => {
         } />
         <Route path="novo" element={
           <FormularioVendaEvento
+            eventosPassados={vendaEventos}
             onSalvar={handleSalvar}
             onCancelar={() => navigate('/dashboard-Venda-das-Corridas')}
           />
