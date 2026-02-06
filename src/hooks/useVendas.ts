@@ -44,6 +44,7 @@ export const useVendas = () => {
             nome: item.nome,
             tipo: item.tipo as 'socio' | 'freelancer',
             valorVendido: Number(item.valor_vendido),
+            porcentagem: Number(item.porcentagem),
             contaBancaria: Number(item.conta_bancaria),
             valorPago: Number(item.valor_pago),
             valorLiquido: Number(item.valor_liquido)
@@ -190,6 +191,7 @@ export const useVendas = () => {
           nome: venda.nome,
           tipo: venda.tipo,
           valor_vendido: venda.valorVendido,
+          porcentagem: venda.porcentagem,
           conta_bancaria: venda.contaBancaria || 0,
           valor_pago: venda.valorPago || 0,
           valor_liquido: venda.valorLiquido || 0

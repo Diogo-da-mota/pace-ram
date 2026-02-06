@@ -14,7 +14,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center group">
           <img 
-            src="/logo-horizontal-branco.png" 
+            src="/logo-horizontal-branco.png" /* Logo da lading pages da da rota (/) /Users/diogomota/Documents/GitHub/pace-ram/public/logo-horizontal-branco.png */
             alt="PACE RAM Logo" 
             className="h-10 w-auto transition-all duration-300 group-hover:scale-105"
           />

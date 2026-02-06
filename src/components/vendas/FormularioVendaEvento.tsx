@@ -1,11 +1,13 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { Trash2, Plus, DollarSign, TrendingUp, Calculator, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Trash2, Plus, DollarSign, TrendingUp, Calculator, ChevronDown, Fuel, Utensils, Handshake, MoreHorizontal, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { VendaEvento, VendaFotografo, Despesa } from './types';
 import { CurrencyInput } from './CurrencyInput';
 import { formatarMoeda } from './utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+
+// --- Subcomponentes ---
 
 const FreelancerSelector = ({
   value,
@@ -21,7 +23,6 @@ const FreelancerSelector = ({
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Fechar ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
@@ -32,12 +33,9 @@ const FreelancerSelector = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Lógica de filtro inteligente
   const sugestoesFiltradas = useMemo(() => {
     if (!value) return sugestoes;
-    // Se o valor atual é exatamente uma das opções, mostra todas (para permitir troca fácil)
     if (sugestoes.includes(value)) return sugestoes;
-    // Caso contrário, filtra pelo texto digitado
     return sugestoes.filter(s => s.toLowerCase().includes(value.toLowerCase()));
   }, [value, sugestoes]);
 
@@ -55,6 +53,7 @@ const FreelancerSelector = ({
           disabled={disabled}
           className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 disabled:opacity-50 text-sm pr-8 outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-all"
           autoComplete="off"
+          placeholder="Nome"
         />
         {!disabled && (
           <button
@@ -88,6 +87,126 @@ const FreelancerSelector = ({
   );
 };
 
+const CATEGORIAS_DESPESA = [
+  { label: 'Gasolina', icon: Fuel },
+  { label: 'Lanche', icon: Utensils },
+  { label: 'Patrocínios', icon: Handshake },
+  { label: 'Outros', icon: MoreHorizontal },
+];
+
+const ExpenseCategorySelector = ({
+  value,
+  onChange,
+  error
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  error?: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const sugestoesFiltradas = useMemo(() => {
+    if (!value) return CATEGORIAS_DESPESA;
+    if (CATEGORIAS_DESPESA.some(c => c.label === value)) return CATEGORIAS_DESPESA;
+    
+    return CATEGORIAS_DESPESA.filter(c => 
+      c.label.toLowerCase().includes(value.toLowerCase())
+    );
+  }, [value]);
+
+  return (
+    <div className="relative" ref={wrapperRef}>
+      <div className="relative">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder="Selecione uma categoria"
+          className={`w-full px-3 py-2 rounded-lg border ${error ? 'border-red-500 focus:ring-red-500' : 'border-zinc-300 dark:border-zinc-600 focus:ring-zinc-900 dark:focus:ring-zinc-100'} bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm pr-8 outline-none focus:ring-2 transition-all`}
+          autoComplete="off"
+        />
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 p-1"
+          tabIndex={-1}
+        >
+          <ChevronDown size={16} />
+        </button>
+      </div>
+      
+      {open && sugestoesFiltradas.length > 0 && (
+        <ul className="absolute z-50 w-full mt-1 max-h-60 overflow-auto bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-1">
+          {sugestoesFiltradas.map((cat, idx) => {
+            const Icon = cat.icon;
+            return (
+              <li
+                key={idx}
+                className="px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2"
+                onClick={() => {
+                  onChange(cat.label);
+                  setOpen(false);
+                }}
+              >
+                <Icon size={16} className="text-zinc-500" />
+                {cat.label}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+// --- Funções Auxiliares (Puras) ---
+
+const calcularResultadosFinanceiros = (dados: VendaEvento) => {
+  // 1. Faturamento Bruto: Soma das vendas de todos (Sócios + Freelancers)
+  const faturamentoBruto = (dados.vendas || []).reduce((acc, v) => acc + (Number(v.valorVendido) || 0), 0);
+
+  // 2. Faturamento Pós-Taxa
+  const taxaSite = faturamentoBruto * ((Number(dados.comissaoPercentual) || 0) / 100);
+  const faturamentoPosTaxa = faturamentoBruto - taxaSite;
+
+  // 3. Lucro Distribuível
+  // Subtrair pagamentos de freelancers
+  const pagamentosFreelancers = (dados.vendas || [])
+    .filter(v => v.tipo === 'freelancer')
+    .reduce((acc, v) => acc + (Number(v.valorPago) || 0), 0);
+  
+  // Subtrair despesas pagas pelo Caixa
+  const despesasCaixa = (dados.despesas || [])
+    .filter(d => d.quemPagou === 'Caixa')
+    .reduce((acc, d) => acc + (Number(d.valor) || 0), 0);
+    
+  // Lucro Distribuível Final
+  const lucroDistribuivel = faturamentoPosTaxa - pagamentosFreelancers - despesasCaixa;
+
+  return {
+    faturamentoBruto,
+    faturamentoPosTaxa,
+    pagamentosFreelancers,
+    despesasCaixa,
+    lucroDistribuivel
+  };
+};
+
 interface FormularioVendaEventoProps {
   evento?: VendaEvento | null;
   eventosPassados?: VendaEvento[];
@@ -99,87 +218,160 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
   const [formData, setFormData] = useState<VendaEvento>(evento || {
     id: Date.now(),
     nome: '',
-    data: '',
+    data: new Date().toISOString().split('T')[0],
     quemPagouFreelancers: 'Diogo',
     totalVendidoSite: 0,
     comissaoPercentual: 10,
     valorLiquido: 0,
     dividirLucros: true,
     vendas: [
-      { nome: 'Diogo', tipo: 'socio', valorVendido: 0, contaBancaria: 0 },
-      { nome: 'Aziel', tipo: 'socio', valorVendido: 0, contaBancaria: 0 }
+      { nome: 'Diogo', tipo: 'socio', valorVendido: 0, porcentagem: 50, contaBancaria: 0 },
+      { nome: 'Aziel', tipo: 'socio', valorVendido: 0, porcentagem: 50, contaBancaria: 0 }
     ],
     despesas: []
   });
 
-  // Garantir valores padrão se vierem undefined do banco (para registros antigos)
+  // Efeito para recalcular valores quando houver mudanças financeiras
+  // Usamos um efeito controlado para evitar loops, focando nas dependências corretas
   useEffect(() => {
-    if (evento) {
+    // Evita recalcular se não houver dados básicos
+    if (!formData.vendas) return;
+
+    const { faturamentoBruto, lucroDistribuivel } = calcularResultadosFinanceiros(formData);
+    
+    let houveMudanca = false;
+    let novoFormData = { ...formData };
+
+    // Atualizar Total Vendido Site se estiver diferente (Sincronização)
+    // Usamos uma pequena margem de erro para float comparison
+    if (Math.abs(novoFormData.totalVendidoSite - faturamentoBruto) > 0.01) {
+      novoFormData.totalVendidoSite = faturamentoBruto;
+      houveMudanca = true;
+    }
+
+    // Atualizar Valor Líquido Global (que é o lucro distribuível neste contexto?)
+    // O campo valorLiquido na raiz geralmente é o lucro total do evento pós taxas/despesas
+    if (Math.abs(novoFormData.valorLiquido - lucroDistribuivel) > 0.01) {
+      novoFormData.valorLiquido = lucroDistribuivel;
+      houveMudanca = true;
+    }
+
+    // Atualizar Ganhos dos Sócios (vendas[].valorLiquido)
+    const novasVendas = novoFormData.vendas.map(venda => {
+      if (venda.tipo === 'socio') {
+        const pct = venda.porcentagem ?? 50;
+        const ganhoCalculado = lucroDistribuivel * (pct / 100);
+        
+        // Se o valor calculado for diferente do atual, atualiza
+        if (Math.abs((venda.valorLiquido || 0) - ganhoCalculado) > 0.01) {
+          houveMudanca = true;
+          return { ...venda, valorLiquido: ganhoCalculado };
+        }
+      }
+      return venda;
+    });
+
+    if (houveMudanca) {
       setFormData(prev => ({
         ...prev,
-        totalVendidoSite: prev.totalVendidoSite ?? 0,
-        comissaoPercentual: prev.comissaoPercentual ?? 10,
-        valorLiquido: prev.valorLiquido ?? 0,
-        dividirLucros: prev.dividirLucros ?? true
+        totalVendidoSite: novoFormData.totalVendidoSite,
+        valorLiquido: novoFormData.valorLiquido,
+        vendas: novasVendas
       }));
     }
-  }, [evento]);
+  }, [
+    // Dependências explícitas que afetam o cálculo
+    formData.comissaoPercentual,
+    // JSON.stringify é um truque para deep compare de arrays simples sem loops infinitos (cuidado com performance em listas gigantes, mas aqui ok)
+    JSON.stringify(formData.vendas.map(v => ({ v: v.valorVendido, p: v.valorPago, pct: v.porcentagem }))),
+    JSON.stringify(formData.despesas)
+  ]);
 
   const adicionarFreelancer = () => {
-    setFormData({
-      ...formData,
-      vendas: [...formData.vendas, { nome: '', tipo: 'freelancer', valorVendido: 0, valorPago: 0 }]
-    });
+    setFormData(prev => ({
+      ...prev,
+      vendas: [...prev.vendas, { nome: '', tipo: 'freelancer', valorVendido: 0, valorPago: 0 }]
+    }));
   };
 
   const removerFreelancer = (index: number) => {
-    const novasVendas = formData.vendas.filter((_, i) => i !== index);
-    setFormData({ ...formData, vendas: novasVendas });
+    setFormData(prev => ({
+      ...prev,
+      vendas: prev.vendas.filter((_, i) => i !== index)
+    }));
   };
 
   const atualizarVenda = (index: number, campo: keyof VendaFotografo, valor: string | number) => {
-    const novasVendas = [...formData.vendas];
-    const isNumero = campo === 'valorVendido' || campo === 'valorPago' || campo === 'contaBancaria' || campo === 'valorLiquido';
-    novasVendas[index] = { ...novasVendas[index], [campo]: isNumero ? Number(valor) : valor };
-    setFormData({ ...formData, vendas: novasVendas });
-  };
+    setFormData(prev => {
+      const novasVendas = [...prev.vendas];
+      const isNumero = ['valorVendido', 'valorPago', 'contaBancaria', 'valorLiquido', 'porcentagem'].includes(campo);
+      
+      novasVendas[index] = { 
+        ...novasVendas[index], 
+        [campo]: isNumero ? Number(valor) : valor 
+      };
 
-  const atualizarFinanceiro = (campo: 'totalVendidoSite' | 'comissaoPercentual', valor: number) => {
-    const novosDados = { ...formData, [campo]: valor };
-    
-    // Recalcular líquido
-    const total = campo === 'totalVendidoSite' ? valor : formData.totalVendidoSite;
-    const comissao = campo === 'comissaoPercentual' ? valor : formData.comissaoPercentual;
-    const liquido = total - (total * (comissao / 100));
-    
-    setFormData({ ...novosDados, valorLiquido: liquido });
-  };
+      // Lógica de Porcentagem Recíproca (Regra 1)
+      if (campo === 'porcentagem' && novasVendas[index].tipo === 'socio') {
+        const socioAtual = novasVendas[index];
+        const novaPct = Number(valor);
+        
+        // Encontrar o outro sócio
+        const indexOutroSocio = novasVendas.findIndex((v, i) => v.tipo === 'socio' && i !== index);
+        
+        if (indexOutroSocio !== -1) {
+          // Ajusta o outro para complementar 100%
+          const pctRestante = Math.max(0, 100 - novaPct);
+          novasVendas[indexOutroSocio] = {
+            ...novasVendas[indexOutroSocio],
+            porcentagem: pctRestante
+          };
+        }
+      }
 
-  const adicionarDespesa = () => {
-    setFormData({
-      ...formData,
-      despesas: [...(formData.despesas || []), { descricao: '', valor: 0, quemPagou: 'Caixa' }]
+      return { ...prev, vendas: novasVendas };
     });
   };
 
-  const removerDespesa = (index: number) => {
-    const novasDespesas = (formData.despesas || []).filter((_, i) => i !== index);
-    setFormData({ ...formData, despesas: novasDespesas });
+  const resetarPorcentagens = () => {
+    setFormData(prev => ({
+      ...prev,
+      vendas: prev.vendas.map(v => 
+        v.tipo === 'socio' ? { ...v, porcentagem: 50 } : v
+      )
+    }));
+    toast.success("Porcentagens resetadas para 50/50");
   };
 
   const atualizarDespesa = (index: number, campo: keyof Despesa, valor: string | number) => {
-    const novasDespesas = [...(formData.despesas || [])];
-    const isNumero = campo === 'valor';
-    novasDespesas[index] = { ...novasDespesas[index], [campo]: isNumero ? Number(valor) : valor };
-    setFormData({ ...formData, despesas: novasDespesas });
+    setFormData(prev => {
+      const novasDespesas = [...(prev.despesas || [])];
+      const isNumero = campo === 'valor';
+      novasDespesas[index] = { ...novasDespesas[index], [campo]: isNumero ? Number(valor) : valor };
+      return { ...prev, despesas: novasDespesas };
+    });
   };
 
-  // Extrair nomes de freelancers já cadastrados para sugestões
+  const adicionarDespesa = () => {
+    setFormData(prev => ({
+      ...prev,
+      despesas: [...(prev.despesas || []), { descricao: '', valor: 0, quemPagou: 'Caixa' }]
+    }));
+  };
+
+  const removerDespesa = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      despesas: (prev.despesas || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  // Sugestões de nomes
   const sugestoesNomes = useMemo(() => {
     const nomes = new Set<string>();
     eventosPassados.forEach(evt => {
       evt.vendas.forEach(venda => {
-        if (venda.nome && venda.nome !== 'Diogo' && venda.nome !== 'Aziel') {
+        if (venda.nome && !['Diogo', 'Aziel'].includes(venda.nome)) {
           nomes.add(venda.nome);
         }
       });
@@ -188,35 +380,26 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
   }, [eventosPassados]);
 
   const handleSalvarClick = () => {
-    // Validação
     if (formData.totalVendidoSite <= 0) {
       toast.error('O Total Vendido deve ser maior que zero.');
       return;
     }
 
-    // Preparar dados para envio
+    if (formData.despesas && formData.despesas.length > 0) {
+      const despesasInvalidas = formData.despesas.some(d => !d.descricao || d.descricao.trim() === '');
+      if (despesasInvalidas) {
+        toast.error('Todas as despesas devem ter uma categoria selecionada.');
+        return;
+      }
+    }
+
     const dadosParaSalvar: VendaEvento | Omit<VendaEvento, 'id'> = { ...formData };
-    
-    // Se não tiver evento original (modo criação), remover o ID temporário
     if (!evento) {
-      // @ts-ignore - Removendo ID temporário para forçar criação
+      // @ts-ignore
       delete (dadosParaSalvar as any).id;
     }
 
-    // Verificar se houve alterações financeiras
-    const houveAlteracaoFinanceira = evento && (
-      formData.totalVendidoSite !== evento.totalVendidoSite ||
-      formData.comissaoPercentual !== evento.comissaoPercentual
-    );
-
-    if (houveAlteracaoFinanceira) {
-      // Usando confirm nativo para simplificar, mas poderia ser um modal customizado
-      if (window.confirm('Você alterou dados financeiros importantes. Deseja confirmar essas alterações?')) {
-        onSalvar(dadosParaSalvar);
-      }
-    } else {
-      onSalvar(dadosParaSalvar);
-    }
+    onSalvar(dadosParaSalvar);
   };
 
   return (
@@ -260,13 +443,6 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
                 onChange={(e) => setFormData({ ...formData, data: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 outline-none"
               />
-              <div className="md:hidden flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 px-3 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                <Switch
-                  aria-label="Dividir Lucros"
-                  checked={formData.dividirLucros !== false}
-                  onCheckedChange={(checked) => setFormData({ ...formData, dividirLucros: checked })}
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -283,11 +459,10 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
                 <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
                   Total Vendido (Site)
                 </label>
-                <CurrencyInput
-                  value={formData.totalVendidoSite}
-                  onChange={(v) => atualizarFinanceiro('totalVendidoSite', v)}
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900"
-                />
+                <div className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 font-medium cursor-not-allowed">
+                  R$ {formatarMoeda(formData.totalVendidoSite)}
+                </div>
+                <p className="text-xs text-zinc-400 mt-1">Calculado via soma das vendas abaixo</p>
               </div>
 
               <div className="w-[30%] md:w-auto">
@@ -301,7 +476,7 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
                     min="0"
                     max="100"
                     value={formData.comissaoPercentual}
-                    onChange={(e) => atualizarFinanceiro('comissaoPercentual', Number(e.target.value))}
+                    onChange={(e) => setFormData({...formData, comissaoPercentual: Number(e.target.value)})}
                     onFocus={(e) => e.target.select()}
                     className="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-900 outline-none pr-8"
                   />
@@ -312,58 +487,39 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
 
             <div>
               <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
-                Valor Líquido
+                Lucro Distribuível (Calc.)
               </label>
               <div className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-bold flex items-center gap-2">
                 <Calculator className="w-4 h-4 text-zinc-500" />
                 R$ {formatarMoeda(formData.valorLiquido)}
               </div>
-              <p className="text-xs text-zinc-500 mt-1">Calculado automaticamente</p>
+              <p className="text-xs text-zinc-500 mt-1">Após taxas, freelancers e despesas</p>
             </div>
-          </div>
-        </div>
-
-        {/* Quem Pagou */}
-        <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 md:p-6">
-          <label className="block text-sm font-semibold mb-3 text-zinc-900 dark:text-zinc-100">
-            Quem pagou os freelancers?
-          </label>
-          <div className="flex flex-row gap-4">
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, quemPagouFreelancers: 'Diogo' })}
-              className={`flex-1 px-6 py-4 rounded-xl font-semibold transition-all ${
-                formData.quemPagouFreelancers === 'Diogo'
-                  ? 'bg-zinc-900 text-white shadow-lg scale-105 dark:bg-zinc-100 dark:text-zinc-900'
-                  : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-              }`}
-            >
-              Diogo
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, quemPagouFreelancers: 'Aziel' })}
-              className={`flex-1 px-6 py-4 rounded-xl font-semibold transition-all ${
-                formData.quemPagouFreelancers === 'Aziel'
-                  ? 'bg-zinc-900 text-white shadow-lg scale-105 dark:bg-zinc-100 dark:text-zinc-900'
-                  : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-              }`}
-            >
-              Aziel
-            </button>
           </div>
         </div>
 
         {/* Vendas */}
         <div>
-          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">Vendas por Fotógrafo (Manual)</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Vendas por Fotógrafo</h3>
+            <button 
+              onClick={resetarPorcentagens}
+              className="text-xs flex items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors"
+              title="Resetar divisão para 50/50"
+            >
+              <RotateCcw size={12} /> Resetar 50/50
+            </button>
+          </div>
+          
           <div className="space-y-4">
             {formData.vendas.map((venda, index) => (
               <div key={index} className="p-3 md:p-6 bg-zinc-50 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                <div className="flex flex-row md:grid md:grid-cols-4 gap-2 md:gap-4 items-end">
-                  <div className="w-[30%] md:w-auto">
+                <div className="flex flex-col md:flex-row gap-4 items-end md:items-center">
+                  
+                  {/* Nome e Tipo */}
+                  <div className="w-full md:w-1/4">
                     <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">
-                      {venda.tipo === 'socio' ? 'Sócio' : 'Nome'}
+                      {venda.tipo === 'socio' ? 'Sócio' : 'Nome do Freelancer'}
                     </label>
                     <FreelancerSelector
                       value={venda.nome}
@@ -372,7 +528,9 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
                       disabled={venda.tipo === 'socio'}
                     />
                   </div>
-                  <div className="w-[30%] md:w-auto">
+
+                  {/* Valor Vendido */}
+                  <div className="w-full md:w-1/4">
                     <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Valor Vendido</label>
                     <CurrencyInput
                       value={venda.valorVendido}
@@ -380,121 +538,145 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
                       className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm"
                     />
                   </div>
-                  {venda.tipo === 'socio' ? (
-                    <div className="flex-1 md:col-span-2">
-                      <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Conta Bancária</label>
-                      <CurrencyInput
-                        value={venda.contaBancaria || 0}
-                        onChange={(valor) => atualizarVenda(index, 'contaBancaria', valor)}
-                        className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm"
-                      />
-                    </div>
-                  ) : (
+
+                  {/* Se for Sócio: Porcentagem e Ganho */}
+                  {venda.tipo === 'socio' && (
                     <>
-                      <div className="flex-1 md:w-auto">
-                        <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Valor Pago</label>
-                        <CurrencyInput
-                          value={venda.valorPago || 0}
-                          onChange={(valor) => atualizarVenda(index, 'valorPago', valor)}
-                          className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm"
-                        />
+                      <div className="w-full md:w-1/6 relative">
+                        <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Divisão (%)</label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={venda.porcentagem ?? 50}
+                            onChange={(e) => atualizarVenda(index, 'porcentagem', e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm pr-6"
+                          />
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 text-xs font-bold">%</span>
+                        </div>
                       </div>
-                      <div className="flex items-end w-auto">
-                        <button
-                          onClick={() => removerFreelancer(index)}
-                          className="w-full md:w-auto px-4 py-2 bg-white border border-zinc-200 hover:border-red-200 hover:bg-red-50 text-zinc-400 hover:text-red-500 rounded-lg transition-colors flex items-center justify-center"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+
+                      <div className="w-full md:w-1/4">
+                        <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Líquido (Calc.)</label>
+                        <div className="w-full px-3 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-sm font-medium border border-transparent">
+                          R$ {formatarMoeda(venda.valorLiquido)}
+                        </div>
                       </div>
                     </>
+                  )}
+
+                  {/* Se for Freelancer: Valor Pago */}
+                  {venda.tipo === 'freelancer' && (
+                    <div className="w-full md:w-1/4">
+                      <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Pagamento (Custo)</label>
+                      <CurrencyInput
+                        value={venda.valorPago || 0}
+                        onChange={(valor) => atualizarVenda(index, 'valorPago', valor)}
+                        className="w-full px-3 py-2 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-100 text-sm focus:ring-red-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Botão Remover (apenas freelancer) */}
+                  {venda.tipo === 'freelancer' && (
+                    <div className="md:ml-2">
+                      <button
+                        onClick={() => removerFreelancer(index)}
+                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        title="Remover Freelancer"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
             ))}
+
+            <button
+              type="button"
+              onClick={adicionarFreelancer}
+              className="flex items-center gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors px-2"
+            >
+              <Plus size={16} />
+              Adicionar Freelancer
+            </button>
           </div>
-          <button
-            onClick={adicionarFreelancer}
-            className="mt-4 w-full sm:w-auto px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            <Plus size={20} /> Adicionar Freelancer
-          </button>
         </div>
 
-        {/* Despesas */}
+        {/* Despesas do Evento */}
         <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 md:p-6">
-          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <DollarSign className="w-6 h-6" /> Despesas do Evento
-          </h3>
-          <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
-            Adicione gastos como gasolina, lanche, hospedagem, etc.
-          </p>
-
+          <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">Despesas do Evento</h3>
+          
           <div className="space-y-4">
             {(formData.despesas || []).map((despesa, index) => (
-              <div key={`despesa-${index}`} className="p-4 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                  <div className="md:col-span-5">
-                    <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Descrição</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Gasolina, Lanche"
-                      value={despesa.descricao}
-                      onChange={(e) => atualizarDespesa(index, 'descricao', e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm outline-none focus:ring-1 focus:ring-zinc-900"
-                    />
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Valor</label>
-                    <CurrencyInput
-                      value={despesa.valor}
-                      onChange={(valor) => atualizarDespesa(index, 'valor', valor)}
-                      className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm outline-none focus:ring-1 focus:ring-zinc-900"
-                    />
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Quem Pagou?</label>
-                    <select
-                      value={despesa.quemPagou}
-                      onChange={(e) => atualizarDespesa(index, 'quemPagou', e.target.value as any)}
-                      className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm outline-none focus:ring-1 focus:ring-zinc-900"
-                    >
-                      <option value="Caixa">Caixa (Lucro)</option>
-                      <option value="Diogo">Diogo</option>
-                      <option value="Aziel">Aziel</option>
-                    </select>
-                  </div>
-                  <div className="md:col-span-1">
-                    <button
-                      onClick={() => removerDespesa(index)}
-                      className="w-full px-2 py-2 bg-white border border-zinc-200 hover:border-red-200 hover:bg-red-50 text-zinc-400 hover:text-red-500 rounded-lg transition-colors flex justify-center"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+              <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                <div className="md:col-span-5">
+                  <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Categoria</label>
+                  <ExpenseCategorySelector
+                    value={despesa.descricao}
+                    onChange={(valor) => atualizarDespesa(index, 'descricao', valor)}
+                  />
+                </div>
+                
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Valor</label>
+                  <CurrencyInput
+                    value={despesa.valor}
+                    onChange={(valor) => atualizarDespesa(index, 'valor', valor)}
+                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm"
+                  />
+                </div>
+
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-semibold mb-2 text-zinc-600 dark:text-zinc-400">Quem Pagou?</label>
+                  <select
+                    value={despesa.quemPagou}
+                    onChange={(e) => atualizarDespesa(index, 'quemPagou', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm outline-none focus:ring-1 focus:ring-zinc-900"
+                  >
+                    <option value="Caixa">Caixa do Evento</option>
+                    <option value="Diogo">Diogo</option>
+                    <option value="Aziel">Aziel</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-1 flex justify-end md:justify-center">
+                  <button
+                    onClick={() => removerDespesa(index)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
             ))}
+            
+            <button
+              type="button"
+              onClick={adicionarDespesa}
+              className="flex items-center gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors px-2"
+            >
+              <Plus size={16} />
+              Adicionar Despesa
+            </button>
           </div>
-
-          <button
-            onClick={adicionarDespesa}
-            className="mt-4 w-full sm:w-auto px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            <Plus size={16} /> Adicionar Despesa
-          </button>
         </div>
 
-        <div className="flex flex-col-reverse sm:flex-row gap-4 justify-end pt-4 border-t border-zinc-200 dark:border-zinc-800">
+        {/* Footer Actions */}
+        <div className="flex justify-end gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
           <button
+            type="button"
             onClick={onCancelar}
-            className="w-full sm:w-auto px-6 py-3 bg-white border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-xl font-semibold transition-colors"
+            className="px-6 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors font-medium"
           >
             Cancelar
           </button>
           <button
-            onClick={() => handleSalvarClick()}
-            className="w-full sm:w-auto px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-semibold transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            type="button"
+            onClick={handleSalvarClick}
+            className="px-6 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors font-medium shadow-lg hover:shadow-xl"
           >
             Salvar Evento
           </button>

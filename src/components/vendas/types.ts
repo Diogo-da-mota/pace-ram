@@ -2,6 +2,7 @@ export type VendaFotografo = {
   nome: string;
   tipo: 'socio' | 'freelancer';
   valorVendido: number;
+  porcentagem?: number;
   contaBancaria?: number;
   valorPago?: number;
   valorLiquido?: number;
