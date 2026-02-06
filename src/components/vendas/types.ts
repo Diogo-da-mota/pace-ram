@@ -5,6 +5,7 @@ export type VendaFotografo = {
   contaBancaria?: number;
   valorPago?: number;
   valorLiquido?: number;
+  porcentagem?: number;
 };
 
 export type Despesa = {

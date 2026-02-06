@@ -46,7 +46,8 @@ export const useVendas = () => {
             valorVendido: Number(item.valor_vendido),
             contaBancaria: Number(item.conta_bancaria),
             valorPago: Number(item.valor_pago),
-            valorLiquido: Number(item.valor_liquido)
+            valorLiquido: Number(item.valor_liquido),
+            porcentagem: item.porcentagem !== null ? Number(item.porcentagem) : undefined
           }));
 
         const despesasDoEvento = despesasData
@@ -192,7 +193,8 @@ export const useVendas = () => {
           valor_vendido: venda.valorVendido,
           conta_bancaria: venda.contaBancaria || 0,
           valor_pago: venda.valorPago || 0,
-          valor_liquido: venda.valorLiquido || 0
+          valor_liquido: venda.valorLiquido || 0,
+          porcentagem: venda.porcentagem
         }));
 
         const { error: itensError } = await supabase

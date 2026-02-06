@@ -39,9 +39,9 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
   // Filtrar dados
   const dadosFiltrados = useMemo(() => {
     return eventos.filter(evento => {
-      // Se tiver eventos específicos selecionados, ignora os filtros de data
-      if (filtroEventosIds.length > 0) {
-        return filtroEventosIds.includes(evento.id);
+      // Filtrar por IDs específicos se houver seleção
+      if (filtroEventosIds.length > 0 && !filtroEventosIds.includes(evento.id)) {
+        return false;
       }
 
       const [ano, mes] = evento.data.split('-');
@@ -133,9 +133,14 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
       const lucroLiquidoEvento = totalEvento - taxaPlataforma - totalFreelancers - totalDespesas;
       lucroLiquidoTotal += lucroLiquidoEvento;
 
-      // Ganhos dos Sócios (Simplificado: 50% do lucro líquido para cada)
-      ganhoDiogo += lucroLiquidoEvento / 2;
-      ganhoAziel += lucroLiquidoEvento / 2;
+      // Ganhos dos Sócios (Calculado pela porcentagem de cada um)
+      const socioDiogo = evento.vendas.find(v => v.nome === 'Diogo');
+      const pctDiogo = socioDiogo?.porcentagem ?? 50;
+      ganhoDiogo += lucroLiquidoEvento * (pctDiogo / 100);
+
+      const socioAziel = evento.vendas.find(v => v.nome === 'Aziel');
+      const pctAziel = socioAziel?.porcentagem ?? 50;
+      ganhoAziel += lucroLiquidoEvento * (pctAziel / 100);
 
       // Cálculos específicos por pessoa
       if (filtroPessoa !== 'todos') {
@@ -143,8 +148,9 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
         
         vendasPessoa.forEach(v => {
           if (v.tipo === 'socio') {
-            // Se for sócio, o ganho é a divisão do lucro
-            ganhosPessoaSelecionada += lucroLiquidoEvento / 2;
+            // Se for sócio, o ganho é a divisão do lucro baseada na porcentagem
+            const pct = v.porcentagem ?? 50;
+            ganhosPessoaSelecionada += lucroLiquidoEvento * (pct / 100);
           } else {
             // Se for freelancer, ganho é o valor pago
             ganhosPessoaSelecionada += (v.valorPago || 0);
@@ -246,7 +252,6 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
             <select
               value={filtroPessoa}
               onChange={(e) => setFiltroPessoa(e.target.value)}
-              disabled={filtroEventosIds.length > 0} // Desabilita se tiver eventos específicos (opcional, mas evita confusão visual)
               className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 disabled:opacity-50"
             >
               <option value="todos">Todos</option>
@@ -261,7 +266,6 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
             <select
               value={filtroMes}
               onChange={(e) => setFiltroMes(e.target.value)}
-              disabled={filtroEventosIds.length > 0}
               className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 disabled:opacity-50"
             >
               <option value="todos">Todos</option>
@@ -285,7 +289,6 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
             <select
               value={filtroAno}
               onChange={(e) => setFiltroAno(e.target.value)}
-              disabled={filtroEventosIds.length > 0}
               className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 disabled:opacity-50"
             >
               <option value="todos">Todos</option>
@@ -445,7 +448,10 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                 if (filtroPessoa !== 'todos') {
                   const vendasPessoa = evento.vendas.filter(v => v.nome === filtroPessoa);
                   vendasPessoa.forEach(v => {
-                    if (v.tipo === 'socio') valorPessoa += lucroLiquido / 2;
+                    if (v.tipo === 'socio') {
+                        const pct = v.porcentagem ?? 50;
+                        valorPessoa += lucroLiquido * (pct / 100);
+                    }
                     else valorPessoa += (v.valorPago || 0);
                   });
                 }
