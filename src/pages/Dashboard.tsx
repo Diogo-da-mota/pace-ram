@@ -499,7 +499,7 @@ const Dashboard = () => {
     await signOut();
     navigate("/");
   };
-
+//logo do siteß
   return (
     <div className="min-h-screen bg-background text-foreground dark">
       {/* Header */}
