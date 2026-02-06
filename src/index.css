@@ -263,18 +263,6 @@
   }
 }
 
-/* Regras para ocultar o SVG/logo do Lovable no canto inferior direito */
-/* Oculta elementos que contenham "lovable" no atributo ou classe */
-[class*="lovable"],
-[id*="lovable"],
-[data-*="lovable"],
-svg[class*="lovable"],
-div[class*="lovable"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
 /* Oculta elementos posicionados no canto inferior direito com z-index alto */
 div[style*="position: fixed"][style*="bottom"][style*="right"][style*="z-index"],
 div[style*="position:fixed"][style*="bottom"][style*="right"][style*="z-index"] {
@@ -292,13 +280,6 @@ svg[style*="position:fixed"][style*="bottom"][style*="right"] {
 *[style*="z-index:999"],
 *[style*="z-index: 9999"],
 *[style*="z-index:9999"] {
-  display: none !important;
-}
-
-/* Oculta elementos específicos do Lovable que podem aparecer */
-iframe[src*="lovable"],
-script[src*="lovable"] + *,
-link[href*="lovable"] + * {
   display: none !important;
 }
 

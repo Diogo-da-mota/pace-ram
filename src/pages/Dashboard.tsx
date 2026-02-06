@@ -507,7 +507,7 @@ const Dashboard = () => {
         <div className="w-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <img 
-              src="/lovable-uploads/0677547b-3e24-403f-9162-45f6deb0cf93.png" 
+              src="/logo-horizontal-branco.png" 
               alt="PACE RAM Logo" 
               className="h-8 w-auto"
             />

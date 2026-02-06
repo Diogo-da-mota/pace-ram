@@ -89,13 +89,13 @@ const Login = () => {
     setConfirmPassword("");
     setRememberMe(false);
   };
-
+/* favcon do navegador */
   return (
     <div className="dark min-h-screen bg-gray-1000 flex items-center justify-center p-4">
       <div className="w-full max-w-md animate-scale-in">
         <div className="text-center mb-8">
           <img 
-            src="/lovable-uploads/0677547b-3e24-403f-9162-45f6deb0cf93.png" 
+            src="/logo-horizontal-branco.png" 
             alt="PACE RAM Logo" 
             className="h-20 w-auto mx-auto mb-8 filter brightness-0 invert"
           />
