@@ -283,21 +283,40 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
     setFormData(recalcularValoresSocios(novosDados));
   };
 
+  const valorDistribuido = useMemo(() => {
+    return formData.vendas.reduce((acc, curr) => acc + (curr.valorVendido || 0), 0);
+  }, [formData.vendas]);
+
+  const valorPendente = useMemo(() => {
+    return Math.max(0, (formData.valorLiquido || 0) - valorDistribuido);
+  }, [formData.valorLiquido, valorDistribuido]);
+
   const atualizarVenda = (index: number, campo: keyof VendaFotografo, valor: string | number) => {
     const novasVendas = [...formData.vendas];
     const isNumero = campo === 'valorVendido' || campo === 'valorPago' || campo === 'contaBancaria' || campo === 'valorLiquido' || campo === 'porcentagem';
-    novasVendas[index] = { ...novasVendas[index], [campo]: isNumero ? Number(valor) : valor };
-    
-    // Se alterou valorVendido, recalcula tudo em cascata
-    if (campo === 'valorVendido') {
-        // 1. Somar todos os valores vendidos (sócios + freelancers)
-        const novoTotalVendido = novasVendas.reduce((acc, curr) => acc + (curr.valorVendido || 0), 0);
-        
-        // 2. Calcular novo valor líquido global (Total - Comissão)
-        const comissao = formData.comissaoPercentual || 0;
-        const novoValorLiquido = novoTotalVendido - (novoTotalVendido * (comissao / 100));
+    const novoValor = isNumero ? Number(valor) : valor;
 
-        // 3. Recalcular porcentagens dos sócios baseado na produção individual
+    // Validação para valorVendido
+    if (campo === 'valorVendido') {
+      const valorAtual = novasVendas[index].valorVendido || 0;
+      const diferenca = Number(novoValor) - valorAtual;
+      const pendenteReal = (formData.valorLiquido || 0) - valorDistribuido;
+      
+      // Se estiver tentando aumentar o valor
+      if (diferenca > 0) {
+        // Se a diferença for maior que o que está pendente (com uma margem de erro pequena para float)
+        if (diferenca > pendenteReal + 0.01) {
+          toast.error(`Valor excede o limite disponível. Restante: ${formatarMoeda(pendenteReal)}`);
+          return;
+        }
+      }
+    }
+
+    novasVendas[index] = { ...novasVendas[index], [campo]: novoValor };
+    
+    // Se alterou valorVendido, apenas recalcula porcentagens dos sócios se necessário, mas não altera o total do site
+    if (campo === 'valorVendido') {
+        // Recalcular porcentagens dos sócios baseado na produção individual
         const vendasSocios = novasVendas.filter(v => v.tipo === 'socio');
         const totalVendidoSocios = vendasSocios.reduce((acc, curr) => acc + (curr.valorVendido || 0), 0);
         
@@ -314,12 +333,9 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
             return venda;
         });
 
-        // 4. Montar novo objeto de dados e chamar o recálculo final (que abate despesas/freelancers)
         const dadosAtualizados = { 
             ...formData, 
-            vendas: vendasComPorcentagemRecalculada,
-            totalVendidoSite: novoTotalVendido,
-            valorLiquido: novoValorLiquido
+            vendas: vendasComPorcentagemRecalculada
         };
         
         setFormData(recalcularValoresSocios(dadosAtualizados));
@@ -529,7 +545,7 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
             <TrendingUp className="w-6 h-6" /> Dados de Vendas do Site
           </h3>
           
-          <div className="flex flex-col md:grid md:grid-cols-3 gap-6">
+          <div className={`flex flex-col md:grid gap-6 ${valorPendente > 0.01 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
             <div className="flex flex-row gap-4 md:contents">
               <div className="flex-1 md:w-auto">
                 <label className="block text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">
@@ -572,6 +588,19 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
               </div>
               <p className="text-xs text-zinc-500 mt-1">Calculado automaticamente</p>
             </div>
+
+            {valorPendente > 0.01 && (
+              <div className="animate-in fade-in slide-in-from-left-4 duration-300">
+                <label className="block text-sm font-semibold mb-2 text-red-600 dark:text-red-400">
+                  Pendente de Distribuição
+                </label>
+                <div className="w-full px-4 py-3 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-bold flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  R$ {formatarMoeda(valorPendente)}
+                </div>
+                <p className="text-xs text-red-500 mt-1">Falta distribuir este valor</p>
+              </div>
+            )}
           </div>
         </div>
 
