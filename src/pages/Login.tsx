@@ -163,7 +163,7 @@ const Login = () => {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
                 />
                 <Label htmlFor="rememberMe" className="text-sm text-gray-200 cursor-pointer">
-                  Lembrar-me por 7 dias
+                  Lembrar-me por 8 dias
                 </Label>
               </div>
             )}
