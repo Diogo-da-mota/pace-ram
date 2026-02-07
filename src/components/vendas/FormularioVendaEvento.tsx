@@ -35,10 +35,14 @@ const FreelancerSelector = ({
   // Lógica de filtro inteligente
   const sugestoesFiltradas = useMemo(() => {
     if (!value) return sugestoes;
-    // Se o valor atual é exatamente uma das opções, mostra todas (para permitir troca fácil)
-    if (sugestoes.includes(value)) return sugestoes;
+    
+    const valueLower = value.toLowerCase().trim();
+    
+    // Se o valor atual é exatamente uma das opções (case insensitive), mostra todas
+    if (sugestoes.some(s => s.toLowerCase() === valueLower)) return sugestoes;
+    
     // Caso contrário, filtra pelo texto digitado
-    return sugestoes.filter(s => s.toLowerCase().includes(value.toLowerCase()));
+    return sugestoes.filter(s => s.toLowerCase().includes(valueLower));
   }, [value, sugestoes]);
 
   return (
@@ -51,7 +55,12 @@ const FreelancerSelector = ({
             onChange(e.target.value);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onClick={() => setOpen(true)}
+          onFocus={(e) => {
+            setOpen(true);
+            // Pequeno delay para garantir que a seleção ocorra após o foco
+            setTimeout(() => e.target.select(), 10);
+          }}
           disabled={disabled}
           className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 disabled:opacity-50 text-sm pr-8 outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-all"
           autoComplete="off"
@@ -119,10 +128,16 @@ const ExpenseCategorySelector = ({
 
   const sugestoesFiltradas = useMemo(() => {
     if (!value) return CATEGORIAS_DESPESA;
-    if (CATEGORIAS_DESPESA.some(c => c.label === value)) return CATEGORIAS_DESPESA;
+    
+    const valueLower = value.toLowerCase().trim();
+    
+    // Se o valor atual é exatamente uma das opções (case insensitive), mostra todas
+    if (CATEGORIAS_DESPESA.some(c => c.label.toLowerCase() === valueLower)) {
+      return CATEGORIAS_DESPESA;
+    }
     
     return CATEGORIAS_DESPESA.filter(c => 
-      c.label.toLowerCase().includes(value.toLowerCase())
+      c.label.toLowerCase().includes(valueLower)
     );
   }, [value]);
 
@@ -136,7 +151,11 @@ const ExpenseCategorySelector = ({
             onChange(e.target.value);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onClick={() => setOpen(true)}
+          onFocus={(e) => {
+            setOpen(true);
+            setTimeout(() => e.target.select(), 10);
+          }}
           placeholder="Selecione uma categoria"
           className={`w-full px-3 py-2 rounded-lg border ${error ? 'border-red-500 focus:ring-red-500' : 'border-zinc-300 dark:border-zinc-600 focus:ring-zinc-900 dark:focus:ring-zinc-100'} bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm pr-8 outline-none focus:ring-2 transition-all`}
           autoComplete="off"
