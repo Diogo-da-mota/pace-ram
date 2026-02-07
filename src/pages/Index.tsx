@@ -20,12 +20,31 @@ import raceExample1 from "@/assets/race-example-1.jpg";
 import raceExample2 from "@/assets/race-example-2.jpg";
 import raceExample3 from "@/assets/race-example-3.jpg";
 
+import { toast } from "sonner"; // Importar toast
+
 const Index = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const { corridasRecentes, corridasEmBreve, loading: loadingCorridas } = useCorridasSeparadas();
-  const { eventos, loading: loadingEventos } = useEventosPublicos();
-  const { redesSociais, loading: loadingRedesSociais } = useRedesSociaisPublicas();
-  const { outros, loading: loadingOutros } = useOutrosPublicos();
+  const { corridasRecentes, corridasEmBreve, loading: loadingCorridas, error: errorCorridas } = useCorridasSeparadas();
+  const { eventos, loading: loadingEventos, error: errorEventos } = useEventosPublicos();
+  const { redesSociais, loading: loadingRedesSociais, error: errorRedes } = useRedesSociaisPublicas();
+  const { outros, loading: loadingOutros, error: errorOutros } = useOutrosPublicos();
+
+  // Monitorar erros de conexão
+  useEffect(() => {
+    const error = errorCorridas || errorEventos || errorRedes || errorOutros;
+    if (error) {
+      console.error("Erro de conexão:", error);
+      // Evitar spam de toasts
+      const hasShownError = sessionStorage.getItem('hasShownConnectionError');
+      if (!hasShownError) {
+        toast.error("Erro ao conectar com o servidor. Verifique sua conexão ou configuração.", {
+          duration: 5000,
+          description: "Se você é o administrador, verifique as variáveis de ambiente."
+        });
+        sessionStorage.setItem('hasShownConnectionError', 'true');
+      }
+    }
+  }, [errorCorridas, errorEventos, errorRedes, errorOutros]);
 
   // Simular loading inicial da página
   useEffect(() => {
