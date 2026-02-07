@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { VendaEvento } from './types';
-import { BarChart3, Filter, Users, TrendingUp, DollarSign, Check, ChevronsUpDown, X } from 'lucide-react';
+import { BarChart3, Filter, Users, TrendingUp, DollarSign, Check, ChevronsUpDown, X, PieChart as PieChartIcon } from 'lucide-react';
 import { formatarMoeda } from './utils';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -178,6 +179,41 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
     const nomeCurto = evento.nome.length > 20 ? evento.nome.substring(0, 20) + '...' : evento.nome;
     return `${dataFormatada} - ${nomeCurto}`;
   };
+
+  // Agrupar despesas por categoria para o gráfico
+  const despesasPorCategoria = useMemo(() => {
+    const categorias = new Map<string, number>();
+
+    dadosFiltrados.forEach(evento => {
+      if (evento.despesas) {
+        evento.despesas.forEach(despesa => {
+          if (despesa.descricao && despesa.valor) {
+             // Normalizar: Capitalize first letter
+            const categoria = despesa.descricao.charAt(0).toUpperCase() + despesa.descricao.slice(1).toLowerCase();
+            const valorAtual = categorias.get(categoria) || 0;
+            categorias.set(categoria, valorAtual + despesa.valor);
+          }
+        });
+      }
+    });
+
+    return Array.from(categorias.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [dadosFiltrados]);
+
+  const COLORS = [
+    '#3b82f6', // blue
+    '#22c55e', // green
+    '#eab308', // yellow
+    '#f97316', // orange
+    '#a855f7', // purple
+    '#ec4899', // pink
+    '#06b6d4', // cyan
+    '#ef4444', // red
+    '#6366f1', // indigo
+    '#84cc16', // lime
+  ];
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -408,6 +444,70 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
           </>
         )}
       </div>
+
+      {/* Gráfico de Despesas */}
+      {despesasPorCategoria.length > 0 && (
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <div className="flex items-center gap-2 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+            <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+              <PieChartIcon className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
+            </div>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Despesas do Evento por Categoria</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {despesasPorCategoria.map((entry, index) => {
+              const total = totais.despesasTotal || 1; // Avoid division by zero
+              const percentage = (entry.value / total) * 100;
+              const color = COLORS[index % COLORS.length];
+              
+              const data = [
+                { name: entry.name, value: entry.value },
+                { name: 'Restante', value: total - entry.value }
+              ];
+
+              return (
+                <div key={entry.name} className="flex flex-col items-center justify-center p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/50 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                  <div className="h-24 w-24 relative mb-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={data}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={35}
+                          outerRadius={45}
+                          startAngle={90}
+                          endAngle={-270}
+                          dataKey="value"
+                          stroke="none"
+                        >
+                          <Cell fill={color} />
+                          <Cell fill="currentColor" className="text-zinc-200 dark:text-zinc-700" />
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                        {Math.round(percentage)}%
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 truncate w-full max-w-[120px]" title={entry.name}>
+                      {entry.name}
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      R$ {formatarMoeda(entry.value)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Lista Detalhada */}
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
