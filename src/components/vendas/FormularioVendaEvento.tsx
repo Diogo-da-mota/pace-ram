@@ -251,6 +251,7 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
       .reduce((acc, curr) => acc + (curr.valorPago || 0), 0);
     
     const totalDespesas = (dados.despesas || [])
+       .filter(d => d.quemPagou !== 'Caixa')
        .reduce((acc, curr) => acc + (curr.valor || 0), 0);
     
     const lucroDisponivel = totalLiquidoEvento - totalPagoFreelancers - totalDespesas;

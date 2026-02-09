@@ -26,7 +26,10 @@ export const calcularResumoVenda = (evento: VendaEvento) => {
     .reduce((acc, v) => acc + (v.valorPago || 0), 0);
   
   // Subtrair despesas se houver (assumindo que saem do líquido antes da divisão)
-  const totalDespesas = (evento.despesas || []).reduce((acc, d) => acc + d.valor, 0);
+  // Ignora despesas pagas pelo "Caixa", pois já saíram do lucro acumulado
+  const totalDespesas = (evento.despesas || [])
+    .filter(d => d.quemPagou !== 'Caixa')
+    .reduce((acc, d) => acc + d.valor, 0);
   
   const valorDividir = totalLiquido - totalFreelancers - totalDespesas;
   

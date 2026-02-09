@@ -123,9 +123,11 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
       const taxaPlataforma = totalEvento * 0.10;
       const totalFreelancers = evento.vendas
         .filter(v => v.tipo === 'freelancer')
-        .reduce((acc, v) => acc + (v.valorPago || 0), 0);
+        .reduce((acc, v) => acc + (v.valorPago || 0),0);
       
-      const totalDespesas = (evento.despesas || []).reduce((acc, d) => acc + d.valor, 0);
+      const totalDespesas = (evento.despesas || [])
+        .filter(d => d.quemPagou !== 'Caixa')
+        .reduce((acc, d) => acc + d.valor, 0);
       
       faturamentoTotal += totalEvento;
       despesasTotal += totalDespesas;
@@ -457,13 +459,17 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {despesasPorCategoria.map((entry, index) => {
-              const total = totais.despesasTotal || 1; // Avoid division by zero
-              const percentage = (entry.value / total) * 100;
+              // O usuário solicitou que a % seja baseada no Lucro Líquido
+              const baseCalculo = totais.lucroLiquidoTotal > 0 ? totais.lucroLiquidoTotal : 1;
+              const percentage = (entry.value / baseCalculo) * 100;
               const color = COLORS[index % COLORS.length];
               
+              // Para o gráfico visual: se a despesa for maior que o lucro, ocupa tudo
+              const restoVisual = Math.max(0, baseCalculo - entry.value);
+
               const data = [
                 { name: entry.name, value: entry.value },
-                { name: 'Restante', value: total - entry.value }
+                { name: 'Lucro Líquido', value: restoVisual }
               ];
 
               return (
@@ -489,7 +495,7 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                        {Math.round(percentage)}%
+                        {percentage.toFixed(1)}%
                       </span>
                     </div>
                   </div>
@@ -541,7 +547,9 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                 const totalFreelancers = evento.vendas
                   .filter(v => v.tipo === 'freelancer')
                   .reduce((acc, v) => acc + (v.valorPago || 0), 0);
-                const totalDespesas = (evento.despesas || []).reduce((acc, d) => acc + d.valor, 0);
+                const totalDespesas = (evento.despesas || [])
+                  .filter(d => d.quemPagou !== 'Caixa')
+                  .reduce((acc, d) => acc + d.valor, 0);
                 const lucroLiquido = totalEvento - taxaPlataforma - totalFreelancers - totalDespesas;
                 
                 let valorPessoa = 0;
