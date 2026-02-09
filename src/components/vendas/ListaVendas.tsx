@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Plus, Edit2, BarChart3, Calendar } from 'lucide-react';
+import { Plus, Edit2, BarChart3, Calendar, Trash2 } from 'lucide-react';
 import { VendaEvento } from './types';
 import { calcularResumoVenda, formatarMoeda } from './utils';
 
@@ -9,11 +9,13 @@ interface ListaVendasProps {
   onEditar: (evento: VendaEvento) => void;
   onDetalhes: (evento: VendaEvento) => void;
   onRelatorios: () => void;
+  onExcluir: (evento: VendaEvento) => void;
 }
 
-export const ListaVendas = ({ eventos, onNovoEvento, onEditar, onDetalhes, onRelatorios }: ListaVendasProps) => {
+export const ListaVendas = ({ eventos, onNovoEvento, onEditar, onDetalhes, onRelatorios, onExcluir }: ListaVendasProps) => {
   const eventosAgrupados = useMemo(() => {
-    const filtrados = [...eventos].sort((a, b) => a.data.localeCompare(b.data));
+    // Ordenar decrescente (mais recente primeiro)
+    const filtrados = [...eventos].sort((a, b) => b.data.localeCompare(a.data));
 
     return filtrados.reduce((acc, evento) => {
       const [ano, mes, dia] = evento.data.split('-').map(Number);
@@ -68,6 +70,13 @@ export const ListaVendas = ({ eventos, onNovoEvento, onEditar, onDetalhes, onRel
                             className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition-colors"
                           >
                             <Edit2 size={18} />
+                          </button>
+                          <button
+                            onClick={() => onExcluir(evento)}
+                            className="px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg transition-colors"
+                            title="Excluir evento"
+                          >
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </div>

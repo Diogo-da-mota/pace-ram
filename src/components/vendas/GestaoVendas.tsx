@@ -31,7 +31,7 @@ const DetalhesVendaWrapper = ({ eventos }: { eventos: VendaEvento[] }) => {
 export const GestaoVendas = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { eventos: vendaEventos, loading, salvarEvento, fetchEventos } = useVendas();
+  const { eventos: vendaEventos, loading, salvarEvento, excluirEvento } = useVendas();
   
   // Determina qual aba está ativa baseado na URL
   const isLista = location.pathname.endsWith('dashboard-Venda-das-Corridas') || location.pathname.endsWith('dashboard-Venda-das-Corridas/');
@@ -45,6 +45,13 @@ export const GestaoVendas = () => {
       navigate('/dashboard-Venda-das-Corridas');
     } else {
       toast.error('Erro ao salvar evento. Tente novamente.');
+    }
+  };
+
+  const handleExcluir = async (evento: VendaEvento) => {
+    if (window.confirm(`Tem certeza que deseja excluir o evento "${evento.nome}"?`)) {
+      await excluirEvento(evento.id);
+      toast.success('Evento excluído com sucesso!');
     }
   };
 
@@ -108,6 +115,7 @@ export const GestaoVendas = () => {
             onEditar={(evento) => navigate(`editar/${evento.id}`)}
             onDetalhes={(evento) => navigate(`detalhes/${evento.id}`)}
             onRelatorios={() => navigate('relatorios')}
+            onExcluir={handleExcluir}
           />
         } />
         <Route path="novo" element={
