@@ -32,11 +32,17 @@ export const GestaoVendas = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { eventos: vendaEventos, loading, salvarEvento, excluirEvento } = useVendas();
+  const scrollKey = 'gestao-vendas-scroll';
   
   // Determina qual aba está ativa baseado na URL
   const isLista = location.pathname.endsWith('dashboard-Venda-das-Corridas') || location.pathname.endsWith('dashboard-Venda-das-Corridas/');
   const isNovo = location.pathname.includes('/novo');
   const isRelatorios = location.pathname.includes('/relatorios');
+
+  const salvarPosicaoScroll = () => {
+    if (typeof window === 'undefined') return;
+    sessionStorage.setItem(scrollKey, String(window.scrollY));
+  };
 
   const handleSalvar = async (dados: VendaEvento | Omit<VendaEvento, 'id'>) => {
     const sucesso = await salvarEvento(dados);
@@ -112,8 +118,14 @@ export const GestaoVendas = () => {
           <ListaVendas 
             eventos={vendaEventos} 
             onNovoEvento={() => navigate('novo')}
-            onEditar={(evento) => navigate(`editar/${evento.id}`)}
-            onDetalhes={(evento) => navigate(`detalhes/${evento.id}`)}
+            onEditar={(evento) => {
+              salvarPosicaoScroll();
+              navigate(`editar/${evento.id}`);
+            }}
+            onDetalhes={(evento) => {
+              salvarPosicaoScroll();
+              navigate(`detalhes/${evento.id}`);
+            }}
             onRelatorios={() => navigate('relatorios')}
             onExcluir={handleExcluir}
           />

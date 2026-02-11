@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { VendaEvento } from './types';
 import { BarChart3, Filter, Users, TrendingUp, DollarSign, Check, ChevronsUpDown, X, PieChart as PieChartIcon } from 'lucide-react';
-import { formatarMoeda } from './utils';
+import { formatarMoeda, isPagador } from './utils';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
@@ -125,25 +125,40 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
         .filter(v => v.tipo === 'freelancer')
         .reduce((acc, v) => acc + (v.valorPago || 0),0);
       
-      const totalDespesas = (evento.despesas || [])
-        .filter(d => d.quemPagou !== 'Caixa')
-        .reduce((acc, d) => acc + d.valor, 0);
+      // Agrupar despesas por pagador para garantir consistência
+      const despesasPorPagador = (evento.despesas || []).reduce((acc, d) => {
+          let quem = 'Caixa';
+          if (isPagador(d.quemPagou, 'Diogo')) quem = 'Diogo';
+          else if (isPagador(d.quemPagou, 'Aziel')) quem = 'Aziel';
+
+          const valor = Number(d.valor || 0);
+          acc[quem] = (acc[quem] || 0) + valor;
+          return acc;
+      }, {} as Record<string, number>);
+
+      // CÁLCULO CORRIGIDO: Apenas despesas de sócios são deduzidas do lucro para divisão
+      const despesasDiogo = despesasPorPagador['Diogo'] || 0;
+      const despesasAziel = despesasPorPagador['Aziel'] || 0;
+      
+      const totalDespesasDedutiveis = despesasDiogo + despesasAziel;
       
       faturamentoTotal += totalEvento;
-      despesasTotal += totalDespesas;
+      despesasTotal += totalDespesasDedutiveis;
       gastoFreelancers += totalFreelancers;
       
-      const lucroLiquidoEvento = totalEvento - taxaPlataforma - totalFreelancers - totalDespesas;
+      const lucroLiquidoEvento = totalEvento - taxaPlataforma - totalFreelancers - totalDespesasDedutiveis;
       lucroLiquidoTotal += lucroLiquidoEvento;
 
       // Ganhos dos Sócios (Calculado pela porcentagem de cada um)
       const socioDiogo = evento.vendas.find(v => v.nome === 'Diogo');
       const pctDiogo = socioDiogo?.porcentagem ?? 50;
-      ganhoDiogo += lucroLiquidoEvento * (pctDiogo / 100);
+
+      ganhoDiogo += (lucroLiquidoEvento * (pctDiogo / 100)) + despesasDiogo;
 
       const socioAziel = evento.vendas.find(v => v.nome === 'Aziel');
       const pctAziel = socioAziel?.porcentagem ?? 50;
-      ganhoAziel += lucroLiquidoEvento * (pctAziel / 100);
+
+      ganhoAziel += (lucroLiquidoEvento * (pctAziel / 100)) + despesasAziel;
 
       // Cálculos específicos por pessoa
       if (filtroPessoa !== 'todos') {
@@ -151,9 +166,12 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
         
         vendasPessoa.forEach(v => {
           if (v.tipo === 'socio') {
-            // Se for sócio, o ganho é a divisão do lucro baseada na porcentagem
+            // Se for sócio, o ganho é a divisão do lucro baseada na porcentagem + Reembolso
             const pct = v.porcentagem ?? 50;
-            ganhosPessoaSelecionada += lucroLiquidoEvento * (pct / 100);
+            
+            const despesasSocio = despesasPorPagador[v.nome] || 0;
+                
+            ganhosPessoaSelecionada += (lucroLiquidoEvento * (pct / 100)) + despesasSocio;
           } else {
             // Se for freelancer, ganho é o valor pago
             ganhosPessoaSelecionada += (v.valorPago || 0);
@@ -547,10 +565,26 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                 const totalFreelancers = evento.vendas
                   .filter(v => v.tipo === 'freelancer')
                   .reduce((acc, v) => acc + (v.valorPago || 0), 0);
-                const totalDespesas = (evento.despesas || [])
-                  .filter(d => d.quemPagou !== 'Caixa')
-                  .reduce((acc, d) => acc + d.valor, 0);
-                const lucroLiquido = totalEvento - taxaPlataforma - totalFreelancers - totalDespesas;
+                
+                // Agrupar despesas por pagador para garantir consistência
+                const despesasPorPagador = (evento.despesas || []).reduce((acc, d) => {
+                    let quem = 'Caixa';
+                    if (isPagador(d.quemPagou, 'Diogo')) quem = 'Diogo';
+                    else if (isPagador(d.quemPagou, 'Aziel')) quem = 'Aziel';
+
+                    const valor = Number(d.valor || 0);
+                    acc[quem] = (acc[quem] || 0) + valor;
+                    return acc;
+                }, {} as Record<string, number>);
+
+                // CÁLCULO CORRIGIDO: Apenas despesas de sócios são deduzidas do lucro para divisão
+                const despesasDiogo = despesasPorPagador['Diogo'] || 0;
+                const despesasAziel = despesasPorPagador['Aziel'] || 0;
+
+                const totalDespesasDedutiveis = despesasDiogo + despesasAziel;
+
+                const totalDespesas = totalDespesasDedutiveis;
+                const lucroLiquido = totalEvento - taxaPlataforma - totalFreelancers - totalDespesasDedutiveis;
                 
                 let valorPessoa = 0;
                 if (filtroPessoa !== 'todos') {
@@ -558,7 +592,8 @@ export const RelatoriosVendas = ({ eventos }: RelatoriosVendasProps) => {
                   vendasPessoa.forEach(v => {
                     if (v.tipo === 'socio') {
                         const pct = v.porcentagem ?? 50;
-                        valorPessoa += lucroLiquido * (pct / 100);
+                        const despesasSocio = despesasPorPagador[v.nome] || 0;
+                        valorPessoa += (lucroLiquido * (pct / 100)) + despesasSocio;
                     }
                     else valorPessoa += (v.valorPago || 0);
                   });

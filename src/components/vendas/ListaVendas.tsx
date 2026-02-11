@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Plus, Edit2, BarChart3, Calendar, Trash2 } from 'lucide-react';
 import { VendaEvento } from './types';
 import { calcularResumoVenda, formatarMoeda } from './utils';
@@ -13,6 +13,22 @@ interface ListaVendasProps {
 }
 
 export const ListaVendas = ({ eventos, onNovoEvento, onEditar, onDetalhes, onRelatorios, onExcluir }: ListaVendasProps) => {
+  const scrollKey = 'gestao-vendas-scroll';
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const valorSalvo = sessionStorage.getItem(scrollKey);
+    if (!valorSalvo) return;
+    const posicao = Number(valorSalvo);
+    sessionStorage.removeItem(scrollKey);
+    if (Number.isNaN(posicao)) return;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: posicao, behavior: 'auto' });
+      });
+    });
+  }, []);
+
   const eventosAgrupados = useMemo(() => {
     // Ordenar decrescente (mais recente primeiro)
     const filtrados = [...eventos].sort((a, b) => b.data.localeCompare(a.data));

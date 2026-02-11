@@ -3,12 +3,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuthSession } from '@/hooks/useAuthSession';
 
+export interface OpenGraphData {
+  title?: string;
+  description?: string;
+  image?: string;
+  favicon?: string;
+  siteName?: string;
+  [key: string]: any;
+}
+
 export interface PortfolioLink {
   id: string;
   url: string;
   titulo?: string | null;
   descricao?: string | null;
   ativo: boolean;
+  og_data?: OpenGraphData | null;
   criado_em?: string | null;
   atualizado_em?: string | null;
   criado_por?: string | null;
@@ -18,6 +28,7 @@ export interface NovoPortfolioLink {
   url: string;
   titulo?: string | null;
   descricao?: string | null;
+  og_data?: OpenGraphData | null;
 }
 
 export const usePortfolioLinks = () => {
@@ -55,6 +66,8 @@ export const usePortfolioLinks = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('usePortfolioLinks: Buscando link ativo...');
+      
       const { data, error } = await supabase
         .from('portfolio_links')
         .select('*')
@@ -62,7 +75,12 @@ export const usePortfolioLinks = () => {
         .order('atualizado_em', { ascending: false })
         .limit(1);
 
-      if (error) throw error;
+      if (error) {
+        console.error('usePortfolioLinks: Erro Supabase:', error);
+        throw error;
+      }
+
+      console.log('usePortfolioLinks: Dados recebidos:', data);
 
       const row = Array.isArray(data) && data.length > 0 ? (data[0] as PortfolioLink) : null;
       setActiveLink(row);

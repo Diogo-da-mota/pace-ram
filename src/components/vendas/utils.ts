@@ -8,6 +8,27 @@ export const formatarMoeda = (valor: number) => {
   }).format(valor);
 };
 
+export const isPagador = (valor: any, nomeEsperado: string): boolean => {
+  if (!valor) return false;
+  const nome = nomeEsperado.toLowerCase();
+  
+  // Se for string
+  if (typeof valor === 'string') {
+    return valor.toLowerCase().trim() === nome;
+  }
+  
+  // Se for objeto (ex: { value: 'Diogo', label: 'Diogo' })
+  if (typeof valor === 'object') {
+    // @ts-ignore
+    const v = (valor.value || valor.label || '');
+    if (typeof v === 'string') {
+        return v.toLowerCase().trim() === nome;
+    }
+  }
+  
+  return false;
+};
+
 export const calcularResumoVenda = (evento: VendaEvento) => {
   // Preferir o valor total vendido do site se disponível (maior que 0), caso contrário usa a soma manual
   const totalBruto = evento.totalVendidoSite > 0 
@@ -28,7 +49,7 @@ export const calcularResumoVenda = (evento: VendaEvento) => {
   // Subtrair despesas se houver (assumindo que saem do líquido antes da divisão)
   // Ignora despesas pagas pelo "Caixa", pois já saíram do lucro acumulado
   const totalDespesas = (evento.despesas || [])
-    .filter(d => d.quemPagou !== 'Caixa')
+    .filter(d => !isPagador(d.quemPagou, 'Caixa'))
     .reduce((acc, d) => acc + d.valor, 0);
   
   const valorDividir = totalLiquido - totalFreelancers - totalDespesas;
@@ -86,8 +107,8 @@ export const calcularResumoVenda = (evento: VendaEvento) => {
   let azielGastos = quemPagou === 'Aziel' ? totalFreelancers : 0;
 
   (evento.despesas || []).forEach(despesa => {
-    if (despesa.quemPagou === 'Diogo') diogoGastos += despesa.valor;
-    if (despesa.quemPagou === 'Aziel') azielGastos += despesa.valor;
+    if (isPagador(despesa.quemPagou, 'Diogo')) diogoGastos += despesa.valor;
+    if (isPagador(despesa.quemPagou, 'Aziel')) azielGastos += despesa.valor;
   });
 
   const diogoPosFreelancers = contaDiogo - diogoGastos;

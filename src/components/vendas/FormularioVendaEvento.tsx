@@ -3,7 +3,7 @@ import { Trash2, Plus, DollarSign, TrendingUp, Calculator, ChevronDown, Fuel, Ut
 import { toast } from 'sonner';
 import { VendaEvento, VendaFotografo, Despesa } from './types';
 import { CurrencyInput } from './CurrencyInput';
-import { formatarMoeda } from './utils';
+import { formatarMoeda, isPagador } from './utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -227,7 +227,7 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
             porcentagem: v.tipo === 'socio' && v.porcentagem === undefined ? 50 : v.porcentagem
         }));
         
-        return {
+        const dadosBase = {
             ...prev,
             totalVendidoSite: prev.totalVendidoSite ?? 0,
             comissaoPercentual: prev.comissaoPercentual ?? 10,
@@ -235,33 +235,52 @@ export const FormularioVendaEvento = ({ evento, eventosPassados = [], onSalvar, 
             dividirLucros: prev.dividirLucros ?? true,
             vendas: vendasComPorcentagem
         };
+
+        // Recalcular automaticamente ao carregar para corrigir dados antigos
+        return recalcularValoresSocios(dadosBase);
       });
     }
   }, [evento]);
 
   // Helper para recalcular valores dos sócios
   const recalcularValoresSocios = (dados: VendaEvento): VendaEvento => {
-    // Se não estiver dividindo lucros, talvez não devêssemos alterar, 
-    // mas o usuário pediu cálculo automático. Vamos manter consistente.
-    
     const totalLiquidoEvento = dados.valorLiquido || 0;
     
     const totalPagoFreelancers = dados.vendas
       .filter(v => v.tipo === 'freelancer')
       .reduce((acc, curr) => acc + (curr.valorPago || 0), 0);
     
-    const totalDespesas = (dados.despesas || [])
-       .filter(d => d.quemPagou !== 'Caixa')
-       .reduce((acc, curr) => acc + (curr.valor || 0), 0);
+    // PASSO 1: Calcular despesas pagas por cada sócio (EXPLICITAMENTE)
+    const despesasDiogo = (dados.despesas || [])
+        .filter(d => isPagador(d.quemPagou, 'Diogo'))
+        .reduce((acc, d) => acc + Number(d.valor || 0), 0);
+
+    const despesasAziel = (dados.despesas || [])
+        .filter(d => isPagador(d.quemPagou, 'Aziel'))
+        .reduce((acc, d) => acc + Number(d.valor || 0), 0);
     
-    const lucroDisponivel = totalLiquidoEvento - totalPagoFreelancers - totalDespesas;
+    const totalDespesasSocios = despesasDiogo + despesasAziel;
+
+    // PASSO 2: Deduzir despesas do total para encontrar o lucro partilhável
+    const lucroDisponivel = totalLiquidoEvento - totalPagoFreelancers - totalDespesasSocios;
 
     const novasVendas = dados.vendas.map(venda => {
       if (venda.tipo === 'socio') {
         const pct = venda.porcentagem ?? 50;
+        
+        // PASSO 3: Dividir o lucro e somar o reembolso
+        const parteDoLucro = lucroDisponivel * (pct / 100);
+        let reembolso = 0;
+
+        if (venda.nome === 'Diogo') {
+            reembolso = (despesasDiogo / 2) - (despesasAziel / 2);
+        } else if (venda.nome === 'Aziel') {
+            reembolso = (despesasAziel / 2) - (despesasDiogo / 2);
+        }
+            
         return {
             ...venda,
-            valorLiquido: lucroDisponivel * (pct / 100)
+            valorLiquido: parteDoLucro + reembolso
         };
       }
       return venda;
